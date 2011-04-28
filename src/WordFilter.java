@@ -48,6 +48,10 @@ public class WordFilter {
             	pos = tWord.tag();
             }
 		}
+    if (pos == null) {
+      return true;
+    }
+
 		if (!pos.startsWith("NN") &&
 			!pos.startsWith("NP") &&
 			!pos.startsWith("NR") &&
