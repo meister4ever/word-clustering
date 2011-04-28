@@ -5,6 +5,7 @@ import org.apache.hadoop.conf.Configuration;
 
 public class WordFrequencyUtil {
   private HashMap<String, Integer> wordFreq = new HashMap<String, Integer>();
+  private HashMap<String, String> stemmedWordMap = new HashMap<String, String>();
   
   public WordFrequencyUtil(String filename, Configuration conf) {
     String textStr = HdfsFileUtil.ReadFileContent(filename, conf);
@@ -14,6 +15,7 @@ public class WordFrequencyUtil {
       String stemmedWord = StringUtil.stem(parts[0]);
       Integer freq = Integer.parseInt(StringUtil.clean(parts[1]));
       wordFreq.put(stemmedWord, freq);
+      stemmedWordMap.put(stemmedWord, StringUtil.clean(parts[0]));
     }
   }
   
@@ -24,5 +26,15 @@ public class WordFrequencyUtil {
       value = 0;
     }
     return value;
+  }
+  
+  public boolean isPresent(String word) {
+	  String stemmedWord = StringUtil.stem(word);
+	  return wordFreq.containsKey(stemmedWord);
+  }
+  
+  public String getStoredString(String word) {
+	  String stemmedWord = StringUtil.stem(word);
+	  return stemmedWordMap.get(stemmedWord);
   }
 }
