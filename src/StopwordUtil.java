@@ -1,27 +1,36 @@
 import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
-import org.tartarus.snowball.ext.porterStemmer;
 
 public class StopwordUtil {
 	private HashSet<String> stopwordSet;
-	private porterStemmer stemmer;
 	
 	public StopwordUtil(String fileName, Configuration conf) {
 		stopwordSet = new HashSet<String>();
-		stemmer = new porterStemmer();
 		String stopwordStrings = HdfsFileUtil.ReadFileContent(fileName, conf);
 		for (String stopword : stopwordStrings.split("\n")) {
-			stemmer.setCurrent(stopword.toLowerCase());
-			stemmer.stem();
-			stopwordSet.add(stemmer.getCurrent());
+			stopwordSet.add(StringUtil.stem(stopword));
 		}
+	}
+
+	public StopwordUtil(String fileName) {
+		stopwordSet = new HashSet<String>();
+		String stopwordStrings = FileUtil.ReadFileContent(fileName);
+		for (String stopword : stopwordStrings.split("\n")) {
+      String stemmed = StringUtil.stem(stopword);
+			stopwordSet.add(stemmed);
+		}
+    System.out.println(stopwordSet.size());
 	}
 	
 	public boolean isStopWord(String word) {
-		stemmer.setCurrent(word.toLowerCase());
-		stemmer.stem();
-		String stemmed = stemmer.getCurrent();
-		return stopwordSet.contains(stemmed);
+		return stopwordSet.contains(StringUtil.stem(word));
 	}
+
+  public static void main(String[] args) {
+    StopwordUtil swUtil = new StopwordUtil(args[0]);
+    if (swUtil.isStopWord(args[1])) {
+      System.out.println("Stopword");
+    }
+  }
 }

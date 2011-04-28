@@ -19,19 +19,15 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
-import org.apache.log4j.Logger;
 
 import edu.umd.cloud9.collection.wikipedia.WikipediaPage;
 import edu.umd.cloud9.collection.wikipedia.WikipediaPageInputFormat;
 
 @SuppressWarnings("deprecation")
-public class WikiWordCount extends Configured implements Tool {
-	private static final Logger sLogger = Logger.getLogger(WikiWordCount.class);
+public class WikiWordCount {
 
 	private static class MyMapper extends MapReduceBase implements
-			Mapper<LongWritable, WikipediaPage, Text, IntWritable> {
+			Mapper<LongWritable, WikipediaPage, Text, Text> {
 
 		private IntWritable one = new IntWritable(1);
 		private WordFilter wordFilter;
@@ -55,7 +51,7 @@ public class WikiWordCount extends Configured implements Tool {
 
 		@Override
 		public void map(LongWritable key, WikipediaPage page,
-				OutputCollector<Text, IntWritable> output, Reporter reporter)
+				OutputCollector<Text, Text> output, Reporter reporter)
 				throws IOException {
 			if (!page.isArticle()) {
 				return;
@@ -75,23 +71,30 @@ public class WikiWordCount extends Configured implements Tool {
 				if (wordFilter.dropWord(term)) {
 					continue;
 				}
-				output.collect(new Text(StringUtil.Stem(term)), one);
+				output.collect(new Text(StringUtil.stem(term)), new Text(term));
 			}
 		}
 	}
 
 	public static class MyReducer extends MapReduceBase implements
-			Reducer<Text, IntWritable, Text, IntWritable> {
+			Reducer<Text, Text, Text, IntWritable> {
 
 		@Override
-		public void reduce(Text key, Iterator<IntWritable> values,
+		public void reduce(Text key, Iterator<Text> values,
 				OutputCollector<Text, IntWritable> output, Reporter reporter)
 				throws IOException {
 			int count = 0;
+      String outputKey = null;
 			while (values.hasNext()) {
-				count += values.next().get();
+        String valueStr = values.next().toString();
+        if (outputKey == null) {
+          outputKey = valueStr;
+        }
+				count++;
 			}
-			output.collect(key, new IntWritable(count));
+      if (count >= 10) {
+        output.collect(new Text(outputKey), new IntWritable(count));
+      }
 		}
 	}
 
@@ -103,18 +106,17 @@ public class WikiWordCount extends Configured implements Tool {
 
 	private static int printUsage() {
 		System.out
-				.println("usage: [input-path] [output-path] [window] [num-reducers]");
-		ToolRunner.printGenericCommandUsage(System.out);
+				.println("usage: [input-path] [output-path] [window] [num-reducers] [stopwords] [pos-tagger-model]");
 		return -1;
 	}
 
 	/**
 	 * Runs this tool.
 	 */
-	public int run(String[] args) throws Exception {
-		if (args.length != 5) {
+	public static void main(String[] args) throws Exception {
+		if (args.length != 6) {
 			printUsage();
-			return -1;
+			return;
 		}
 
 		String inputPath = args[0];
@@ -122,53 +124,44 @@ public class WikiWordCount extends Configured implements Tool {
 
 		int window = Integer.parseInt(args[2]);
 		int reduceTasks = Integer.parseInt(args[3]);
-		
-		FileSystem.get(getConf()).delete(new Path(outputPath), true);
-		sLogger.info("Tool: ComputeCooccurrenceMatrixStripes");
-		sLogger.info(" - input path: " + inputPath);
-		sLogger.info(" - output path: " + outputPath);
-		sLogger.info(" - window: " + window);
-		sLogger.info(" - number of reducers: " + reduceTasks);
 
-		JobConf conf = new JobConf(getConf(), WikiWordCount.class);
-		DistributedCache.createSymlink(conf);
-        DistributedCache.addCacheFile(new URI(args[5]), conf);
-        
-        conf.set("stopWordFile", args[4]);
-        conf.set("taggerModelFile", "postag.model");
+    JobConf conf = new JobConf(WikiWordCount.class);    
+		System.out.println(" - input path: " + inputPath);
+		System.out.println(" - output path: " + outputPath);
+		System.out.println(" - window: " + window);
+		System.out.println(" - number of reducers: " + reduceTasks);
+		System.out.println(" - stopwords: " + args[4]);
+		System.out.println(" - pos-tagger-model: " + args[5]);
+
+    DistributedCache.createSymlink(conf);
+    DistributedCache.addCacheFile(new URI(args[5]), conf);
+
+    conf.set("stopWordsFile", args[4]);
+    conf.set("taggerModelFile", "postag_model");
 		conf.setJobName("WikiWordCount");
 		conf.setNumMapTasks(48);
 		conf.setNumReduceTasks(reduceTasks);
 
-		FileInputFormat.setInputPaths(conf, new Path(inputPath));
-		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
+    conf.set("mapred.task.timeout", "12000000");
+    conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
 
 		conf.setInputFormat(WikipediaPageInputFormat.class);
 		conf.setOutputFormat(TextOutputFormat.class);
 
 		conf.setMapperClass(MyMapper.class);
-		conf.setCombinerClass(MyReducer.class);
 		conf.setReducerClass(MyReducer.class);
 		conf.setMapOutputKeyClass(Text.class);
-		conf.setMapOutputValueClass(IntWritable.class);
+		conf.setMapOutputValueClass(Text.class);
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(IntWritable.class);
+
+		FileInputFormat.setInputPaths(conf, new Path(inputPath));
+		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
 
 		long startTime = System.currentTimeMillis();
 		JobClient.runJob(conf);
 		System.out.println("Job Finished in "
 				+ (System.currentTimeMillis() - startTime) / 1000.0
 				+ " seconds");
-
-		return 0;
-	}
-
-	/**
-	 * Dispatches command-line arguments to the tool via the
-	 * <code>ToolRunner</code>.
-	 */
-	public static void main(String[] args) throws Exception {
-		int res = ToolRunner.run(new WikiWordCount(), args);
-		System.exit(res);
 	}
 }

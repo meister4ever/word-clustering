@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.tartarus.snowball.ext.porterStemmer;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -13,7 +12,6 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class WordFilter {
 	private StopwordUtil swUtil;
-	private porterStemmer stemmer = new porterStemmer();
 	private MaxentTagger tagger;
 	
 	public WordFilter(String stopwordFile, String taggerFile,
@@ -23,9 +21,7 @@ public class WordFilter {
 	}
 	
 	public boolean dropWord(String word) {
-		stemmer.setCurrent(word.toLowerCase());
-		stemmer.stem();
-		String stemmedWord = stemmer.getCurrent();
+		String stemmedWord = StringUtil.stem(word);
 		
 		// Check if the word is long or zero length.
 		if (word.length() > 20 || word.length() == 0) {
@@ -44,7 +40,8 @@ public class WordFilter {
 		
 		// Check if the word is a noun or adjective.
 		String pos = null;
-		List<ArrayList<? extends HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(word));
+    String cleanedWord = StringUtil.clean(word);
+		List<ArrayList<? extends HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(cleanedWord));
 		for (ArrayList<? extends HasWord> sentence : sentences) {
             ArrayList<TaggedWord> tSentence = this.tagger.tagSentence(sentence);
             for (TaggedWord tWord : tSentence) {
