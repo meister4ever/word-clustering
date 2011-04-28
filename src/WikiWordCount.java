@@ -27,7 +27,6 @@ public class WikiWordCount {
 	private static class MyMapper extends MapReduceBase implements
 			Mapper<LongWritable, WikipediaPage, Text, Text> {
 
-		private IntWritable one = new IntWritable(1);
 		private WordFilter wordFilter;
 
 		protected static enum MyCounter {
