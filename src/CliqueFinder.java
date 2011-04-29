@@ -78,7 +78,7 @@ public class CliqueFinder {
 		return intersect;
 	}
 
-	// Implementation of Bron–Kerbosch algorithm.
+	// Implementation of Bron Kerbosch algorithm.
 	private void dumpCliques1(HashSet<String> R, HashSet<String> P,
 			HashSet<String> X) {
 		if (P.size() == 0 && X.size() == 0) {
