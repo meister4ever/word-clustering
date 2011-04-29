@@ -88,7 +88,8 @@ public class CliqueFinder {
 			}
 			System.out.println("=============");
 		}
-		for (String v : P) {
+    HashSet<String> tmpP = new HashSet<String>(P);
+		for (String v : tmpP) {
 			HashSet<String> R1 = new HashSet<String>(R);
 			R1.add(v);
 
@@ -108,7 +109,7 @@ public class CliqueFinder {
 	}
 	
 	public static void main(String[] args) {
-		CliqueFinder cf = new CliqueFinder(args[0], 3.0, 5);
+		CliqueFinder cf = new CliqueFinder(args[0], 5.0, 5);
 		cf.dumpCliques();
 	}
 }
