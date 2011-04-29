@@ -64,7 +64,11 @@ public class CliqueFinder {
 	}
 
 	private HashSet<String> getNeighbours(String word) {
-		return new HashSet<String>(adjList.get(word).keySet());
+    HashMap<String, Double> list = adjList.get(word);
+    if (list == null) {
+      return new HashSet<String>();
+    }
+		return new HashSet<String>(list.keySet());
 	}
 
 	private HashSet<String> setIntersect(HashSet<String> a, HashSet<String> b) {
@@ -81,7 +85,7 @@ public class CliqueFinder {
 	// Implementation of Bron Kerbosch algorithm.
 	private void dumpCliques1(HashSet<String> R, HashSet<String> P,
 			HashSet<String> X) {
-		if (P.size() == 0 && X.size() == 0) {
+		if (R.size() >= 20 && (P.size() == 0 && X.size() == 0)) {
 			System.out.println("=============");
 			for (String word : R) {
 				System.out.println(word);
@@ -94,6 +98,7 @@ public class CliqueFinder {
 			R1.add(v);
 
 			HashSet<String> nv = getNeighbours(v);
+      nv.remove(v);
 			HashSet<String> P1 = setIntersect(P, nv);
 			HashSet<String> X1 = setIntersect(X, nv);
 
@@ -109,7 +114,8 @@ public class CliqueFinder {
 	}
 	
 	public static void main(String[] args) {
-		CliqueFinder cf = new CliqueFinder(args[0], 5.0, 5);
+    CliqueFinder cf = new CliqueFinder(args[0], Double.parseDouble(args[1]), 
+            Integer.parseInt(args[2]));
 		cf.dumpCliques();
 	}
 }
