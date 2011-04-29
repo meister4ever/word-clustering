@@ -23,7 +23,7 @@ import edu.umd.cloud9.collection.wikipedia.WikipediaPageInputFormat;
 
 @SuppressWarnings("deprecation")
 public class WikiWordCount {
-
+	
 	private static class MyMapper extends MapReduceBase implements
 			Mapper<LongWritable, WikipediaPage, Text, Text> {
 
