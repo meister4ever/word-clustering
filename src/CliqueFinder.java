@@ -110,7 +110,7 @@ public class CliqueFinder {
 			X.add(v);
 		}
 	}
-	
+
 	private boolean isClique(String word) {
 		HashSet<String> nodes = getNeighbours(word);
 		nodes.add(word);
@@ -127,7 +127,7 @@ public class CliqueFinder {
 		}
 		return true;
 	}
-	
+
 	private boolean removeAndDumpClique() {
 		boolean removed = false;
 		for (String word : adjList.keySet()) {
@@ -135,16 +135,15 @@ public class CliqueFinder {
 				System.out.print(word);
 				HashMap<String, Double> level2Map = adjList.get(word);
 				if (level2Map != null)
-				for (String adj : level2Map.keySet()) {
-					System.out.print(adj);
-				}
+					for (String adj : level2Map.keySet()) {
+						System.out.print(adj);
+					}
 				System.out.println("\n");
 				removed = true;
 			}
 		}
 		return removed;
 	}
-
 
 	public void doBfs(String word, HashSet<String> visited) {
 		Queue<String> queue = new LinkedList<String>();
@@ -161,18 +160,39 @@ public class CliqueFinder {
 			}
 		}
 	}
-	
+
 	public void dumpCliques() {
-		//HashSet<String> allNodes = new HashSet<String>(adjList.keySet());
-		//dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
-		//while (removeAndDumpClique());
+		// HashSet<String> allNodes = new HashSet<String>(adjList.keySet());
+		// dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
+		// while (removeAndDumpClique());
 		HashSet<String> visited = new HashSet<String>();
-    for (String word : adjList.keySet()) {
-      if (!visited.contains(word)) {
-        doBfs(word, visited);
-        System.out.println("\n");
-      }
-    }
+		for (String word : adjList.keySet()) {
+			if (!visited.contains(word)) {
+				doBfs(word, visited);
+				System.out.println("\n");
+			}
+		}
+	}
+	
+	public void dumpGraph() {
+		HashMap<String, Double> allPairs = new HashMap<String, Double>();
+		for (String word1 : adjList.keySet()) {
+			HashMap<String, Double> level2Map = adjList.get(word1);
+			if (level2Map == null) {
+				continue;
+			}
+			for (String word2 : level2Map.keySet()) {
+				String key = word1 + " -- " + word2;
+				if (!allPairs.containsKey(key)) {
+					allPairs.put(key, level2Map.get(word2));
+				}
+			}
+		}
+		System.out.println("graph G {");
+		for (String key : allPairs.keySet()) {
+			System.out.println("\t" + key + "[" + allPairs.get(key) + "];");
+		}
+		System.out.println("}");
 	}
 
 	public static void main(String[] args) {
