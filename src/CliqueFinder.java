@@ -152,7 +152,7 @@ public class CliqueFinder {
 		while (queue.size() > 0) {
 			String aNode = queue.remove();
 			visited.add(aNode);
-			System.out.println(aNode);
+			System.out.print(aNode + ", ");
 			HashSet<String> neighbours = getNeighbours(aNode);
 			for (String neighbour : neighbours) {
 				if (!visited.contains(neighbour)) {
@@ -167,16 +167,13 @@ public class CliqueFinder {
 		//dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
 		//while (removeAndDumpClique());
 		HashSet<String> visited = new HashSet<String>();
-		while (visited.size() < adjList.size()) {
-			for (String word : adjList.keySet()) {
-				if (!visited.contains(word)) {
-					doBfs(word, visited);
-				}
-			}
-		}
+    for (String word : adjList.keySet()) {
+      if (!visited.contains(word)) {
+        doBfs(word, visited);
+        System.out.println("\n");
+      }
+    }
 	}
-
-
 
 	public static void main(String[] args) {
 		CliqueFinder cf = new CliqueFinder(args[0],
