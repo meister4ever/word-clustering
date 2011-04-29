@@ -31,7 +31,8 @@ public class CliqueFinder {
 		fUtil.close();
 
 		// Create the cliques.
-		while (removeEdges());
+		while (removeEdges())
+			;
 	}
 
 	private void removeNode(String word) {
@@ -64,10 +65,10 @@ public class CliqueFinder {
 	}
 
 	private HashSet<String> getNeighbours(String word) {
-    HashMap<String, Double> list = adjList.get(word);
-    if (list == null) {
-      return new HashSet<String>();
-    }
+		HashMap<String, Double> list = adjList.get(word);
+		if (list == null) {
+			return new HashSet<String>();
+		}
 		return new HashSet<String>(list.keySet());
 	}
 
@@ -92,13 +93,13 @@ public class CliqueFinder {
 			}
 			System.out.println("=============");
 		}
-    HashSet<String> tmpP = new HashSet<String>(P);
+		HashSet<String> tmpP = new HashSet<String>(P);
 		for (String v : tmpP) {
 			HashSet<String> R1 = new HashSet<String>(R);
 			R1.add(v);
 
 			HashSet<String> nv = getNeighbours(v);
-      nv.remove(v);
+			nv.remove(v);
 			HashSet<String> P1 = setIntersect(P, nv);
 			HashSet<String> X1 = setIntersect(X, nv);
 
@@ -107,15 +108,50 @@ public class CliqueFinder {
 			X.add(v);
 		}
 	}
-
-	public void dumpCliques() {
-		HashSet<String> allNodes = new HashSet<String>(adjList.keySet());
-		dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
+	
+	private boolean isClique(String word) {
+		HashSet<String> nodes = getNeighbours(word);
+		nodes.add(word);
+		for (String node1 : nodes) {
+			for (String node2 : nodes) {
+				if (node1.compareTo(node2) == 0) {
+					continue;
+				}
+				HashMap<String, Double> level2Map = adjList.get(node1);
+				if (level2Map == null || !level2Map.containsKey(node2)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
+	private boolean removeAndDumpClique() {
+		boolean removed = false;
+		for (String word : adjList.keySet()) {
+			if (isClique(word)) {
+				System.out.print(word);
+				HashMap<String, Double> level2Map = adjList.get(word);
+				if (level2Map != null)
+				for (String adj : level2Map.keySet()) {
+					System.out.print(adj);
+				}
+				System.out.println("\n");
+				removed = true;
+			}
+		}
+		return removed;
+	}
+
+	public void dumpCliques() {
+		//HashSet<String> allNodes = new HashSet<String>(adjList.keySet());
+		//dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
+		while (removeAndDumpClique());
+	}
+
 	public static void main(String[] args) {
-    CliqueFinder cf = new CliqueFinder(args[0], Double.parseDouble(args[1]), 
-            Integer.parseInt(args[2]));
+		CliqueFinder cf = new CliqueFinder(args[0],
+				Double.parseDouble(args[1]), Integer.parseInt(args[2]));
 		cf.dumpCliques();
 	}
 }
