@@ -165,6 +165,8 @@ public class CliqueFinder {
 		// HashSet<String> allNodes = new HashSet<String>(adjList.keySet());
 		// dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
 		// while (removeAndDumpClique());
+
+    /*
 		HashSet<String> visited = new HashSet<String>();
 		for (String word : adjList.keySet()) {
 			if (!visited.contains(word)) {
@@ -172,6 +174,7 @@ public class CliqueFinder {
 				System.out.println("\n");
 			}
 		}
+    */
 	}
 	
 	public void dumpGraph() {
@@ -182,7 +185,7 @@ public class CliqueFinder {
 				continue;
 			}
 			for (String word2 : level2Map.keySet()) {
-				String key = word1 + " -- " + word2;
+				String key = "\"" + word1 + "\"" + " -- " + "\"" + word2 + "\"";
 				if (!allPairs.containsKey(key)) {
 					allPairs.put(key, level2Map.get(word2));
 				}
@@ -190,14 +193,26 @@ public class CliqueFinder {
 		}
 		System.out.println("graph G {");
 		for (String key : allPairs.keySet()) {
-			System.out.println("\t" + key + "[" + allPairs.get(key) + "];");
+			System.out.println("\t" + key /*+ "[ label=\"" + allPairs.get(key) + "\"];"*/);
 		}
 		System.out.println("}");
 	}
+
+  public void printGraphStats() {
+    	for (String word1 : adjList.keySet()) {
+			HashMap<String, Double> level2Map = adjList.get(word1);
+			if (level2Map == null) {
+				continue;
+			}
+			System.out.println(word1 + "\t" + level2Map.size());
+		}
+  }
 
 	public static void main(String[] args) {
 		CliqueFinder cf = new CliqueFinder(args[0],
 				Double.parseDouble(args[1]), Integer.parseInt(args[2]));
 		cf.dumpCliques();
+    //cf.printGraphStats();
+    //cf.dumpGraph();
 	}
 }
