@@ -49,6 +49,10 @@ public class WordnetUtil {
 					for (Word synWord : synWords) {
 						expansions.add(StringUtil.clean(synWord.getLemma()));
 					}
+					List<PointerType> allPtrs = PointerType.getAllPointerTypes();
+					for (PointerType type : allPtrs) {
+						expansions.addAll(getWordsFromDomainType(synset, type));
+					}
 				}
 			}
 		}
@@ -93,16 +97,15 @@ public class WordnetUtil {
 	public Set<String> getAssociatedWords(Synset synset) throws JWNLException {
 		Set<String> words = new TreeSet<String>();
 		PointerUtils ptUtils = PointerUtils.getInstance();
-		// Get all synonyms.
-		Word[] allWords = synset.getWords();
-		for (Word word : allWords) {
-			words.add(StringUtil.clean(word.getLemma()));
-		}
 
 		// Also sees.
 		words.addAll(getWordsFromPtrNodeList(ptUtils.getAlsoSees(synset)));
 		// Get synonyms.
 		words.addAll(getWordsFromPtrNodeList(ptUtils.getSynonyms(synset)));
+		words.addAll(getWordsFromPtrNodeList(ptUtils.getAttributes(synset)));
+		words.addAll(getWordsFromPtrNodeList(ptUtils.getAntonyms(synset)));
+		words.addAll(getWordsFromPtrNodeList(ptUtils.getCauses(synset)));
+		words.addAll(getWordsFromPtrNodeList(ptUtils.getAntonyms(synset)));
 		return words;
 	}
 
@@ -113,6 +116,9 @@ public class WordnetUtil {
 
 	public static void main(String[] args) throws JWNLException,
 			FileNotFoundException {
-		
+		WordnetUtil wnUtil = WordnetUtil.getInstance();
+		if (wnUtil.isRelated(args[0], args[1])) {
+			System.out.println("Connected.");
+		}
 	}
 }
