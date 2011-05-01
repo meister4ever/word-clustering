@@ -24,7 +24,7 @@ public class WordnetUtil {
 
 	private WordnetUtil() throws FileNotFoundException, JWNLException {
 		JWNL.initialize(new FileInputStream(
-				"C:\\Users\\rohith\\Downloads\\jwnl14-rc2\\jwnl14-rc2\\config\\file_properties.xml"));
+				"/home/rmenon/word-clustering/data/file_properties.xml"));
 		dictionary = Dictionary.getInstance();
 	}
 
