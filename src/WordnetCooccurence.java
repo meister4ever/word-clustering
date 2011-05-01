@@ -8,7 +8,7 @@ import org.apache.commons.math.linear.OpenMapRealMatrix;
 
 public class WordnetCooccurence {
 	
-	private ArrayList<String> words;
+	private ArrayList<String> words = new ArrayList<String>();
 	private OpenMapRealMatrix newMat;
 	
 	public WordnetCooccurence(String filename, int pathLen) throws FileNotFoundException, JWNLException {
@@ -25,6 +25,7 @@ public class WordnetCooccurence {
 		// Create graph
 		int numWords = words.size();
 		OpenMapRealMatrix adjMat = new OpenMapRealMatrix(numWords, numWords);
+    int count = 0;
 		for (int i = 0; i < numWords; ++i) {
 			int numChildren = 0;
 			for (int j = 0; j < numWords; ++j) {
@@ -36,6 +37,8 @@ public class WordnetCooccurence {
 					++numChildren;
 				}
 			}
+      ++count;
+      System.err.print("Done: " + count + "/" + numWords + "\r");
 			numChildMap.put(words.get(i), numChildren);
 		}
 		
