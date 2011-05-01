@@ -3,6 +3,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer;
+
 public class CliqueFinder {
 
 	private int connectionPerNode = 3;
@@ -166,17 +168,15 @@ public class CliqueFinder {
 		// dumpCliques1(new HashSet<String>(), allNodes, new HashSet<String>());
 		// while (removeAndDumpClique());
 
-    /*
-		HashSet<String> visited = new HashSet<String>();
-		for (String word : adjList.keySet()) {
-			if (!visited.contains(word)) {
-				doBfs(word, visited);
-				System.out.println("\n");
-			}
-		}
-    */
+		/*
+		 * HashSet<String> visited = new HashSet<String>(); for (String word :
+		 * adjList.keySet()) { if (!visited.contains(word)) { doBfs(word,
+		 * visited); System.out.println("\n"); } }
+		 */
+		KmeansClustering kmeans = new KmeansClustering(adjList, 50, 10);
+		kmeans.dumpClusters();
 	}
-	
+
 	public void dumpGraph() {
 		HashMap<String, Double> allPairs = new HashMap<String, Double>();
 		for (String word1 : adjList.keySet()) {
@@ -193,26 +193,29 @@ public class CliqueFinder {
 		}
 		System.out.println("graph G {");
 		for (String key : allPairs.keySet()) {
-			System.out.println("\t" + key /*+ "[ label=\"" + allPairs.get(key) + "\"];"*/);
+			System.out.println("\t" + key /*
+										 * + "[ label=\"" + allPairs.get(key) +
+										 * "\"];"
+										 */);
 		}
 		System.out.println("}");
 	}
 
-  public void printGraphStats() {
-    	for (String word1 : adjList.keySet()) {
+	public void printGraphStats() {
+		for (String word1 : adjList.keySet()) {
 			HashMap<String, Double> level2Map = adjList.get(word1);
 			if (level2Map == null) {
 				continue;
 			}
 			System.out.println(word1 + "\t" + level2Map.size());
 		}
-  }
+	}
 
 	public static void main(String[] args) {
 		CliqueFinder cf = new CliqueFinder(args[0],
 				Double.parseDouble(args[1]), Integer.parseInt(args[2]));
 		cf.dumpCliques();
-    //cf.printGraphStats();
-    //cf.dumpGraph();
+		// cf.printGraphStats();
+		// cf.dumpGraph();
 	}
 }
