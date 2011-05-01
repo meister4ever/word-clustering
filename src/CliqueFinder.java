@@ -8,11 +8,13 @@ import org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer;
 public class CliqueFinder {
 
 	private int connectionPerNode = 3;
+  private String cooccurFile;
 	private HashMap<String, HashMap<String, Double>> adjList;
 
 	public CliqueFinder(String filename, double scoreThreshold,
 			int connectionPerNode) {
 		this.connectionPerNode = connectionPerNode;
+    this.cooccurFile = filename;
 
 		StreamingFileUtil fUtil = new StreamingFileUtil(filename);
 		String line = null;
@@ -173,7 +175,7 @@ public class CliqueFinder {
 		 * adjList.keySet()) { if (!visited.contains(word)) { doBfs(word,
 		 * visited); System.out.println("\n"); } }
 		 */
-		KmeansClustering kmeans = new KmeansClustering(adjList, 50, 10);
+		KmeansClustering kmeans = new KmeansClustering(adjList, cooccurFile, 50, 10);
 		kmeans.dumpClusters();
 	}
 
