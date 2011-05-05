@@ -15,7 +15,6 @@ animalism
 animality
 aplomb
 approachability
-asperity
 aspersion
 ataraxia
 attack
@@ -61,7 +60,6 @@ credibility
 croquet
 cunning
 curiousness
-dance
 demonstrativeness
 destructiveness
 difference
@@ -97,7 +95,6 @@ feminist
 fibrosity
 fidelity
 fieriness
-fine arts
 finiteness
 flexibility
 fluster
