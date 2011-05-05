@@ -1,82 +1,42 @@
 accessibility
 accidents
-accountant
 accuracy
-acrobatics
 activeness
-actor
-actuarian
 adventurousness
-advocate
-aeronautical engineering
 affirmativeness
 aggression
 aggressiveness
 agreeableness
-air steward
 aloneness
 aloofness
 amorality
 anger
 animalism
 animality
-animal rights
-anthropology
 aplomb
 approachability
-archeology
-archery
-architect
-architecture
-architecture
-art
 asperity
 aspersion
-assistant
-astronaut
-astronomy
 ataraxia
 attack
 attentiveness
 attractiveness
 audacity
 aura
-author
 authoritarian
-badminton
 badness
-baker
-barman
-baseball
-basketball
 beauty
-biology
-biology
-biotechnology
 bitterness
 black man
 blood
 bloodiness
-boxing
 bravery
-builder
-business
-businessman
-butcher
 calmness
-caretaker
 certainty
 changeableness
 changelessness
-chef
-chemical engineering
-chemistry
-chemistry
-civil engineering
-civil servant
 clarity
 cleanliness
-clerk
 closeness
 combustibility
 communication
@@ -87,13 +47,9 @@ complexity
 composure
 comprehensibility
 compulsiveness
-computer programmer
-computer science
-computer science
 condescension
 congeniality
 constructiveness
-cook
 coolness
 correctness
 counterfactuality
@@ -102,20 +58,11 @@ cowardice
 crabbiness
 crankiness
 credibility
-cricket
-criminal
-criminology
 croquet
-cultural studies
 cunning
 curiousness
-cycling
 dance
-dancing
-decorator
 demonstrativeness
-dentist
-designer
 destructiveness
 difference
 difficulty
@@ -126,30 +73,15 @@ discipline
 discomposure
 distrust
 divinity
-doctor
 domesticity
-drama
-driver
 drugs
 easiness
 easygoingness
-economics
-economics
-economist
-editor
-education
 efficient
 egoism
-electrical engineering
-electrician
 elegance
 emotionality
-engineer
-engineering
 environmentalists
-ergonomics
-ethnicity
-ethnology
 evil
 excellence
 explosions
@@ -159,28 +91,19 @@ extremeness
 extroversion
 factuality
 failed
-farmer
 fat
 fault
-femininity
 feminist
 fibrosity
 fidelity
 fieriness
-film director
-finance
-financial analyst
 fine arts
 finiteness
-fisherman
 flexibility
-flight attendant
 fluster
 fondness
 foolishness
-football
 foreignness
-forestry
 fortitude
 friendlessness
 friendliness
@@ -188,40 +111,23 @@ frivolity
 fruitfulness
 fruitlessness
 furtiveness
-gender studies
-genealogy
 generality
-geography
-geology
 global warming
 godly
-golf
 good nature
 goodness
-gourmandism
 grace
 gutsiness
-gymnastics
-hairdresser
-handball
 hardness
 harshness
 helpfulness
-hero
-heroine
-heroism
-history
-history
-hockey
 holiness
 hospitableness
 hostility
 humaneness
 humanness
-human rights
 humility
 humor
-ice hockey
 ideality
 illogicality
 immateriality
@@ -243,8 +149,6 @@ inefficient
 inelegance
 infidelity
 infiniteness
-information science
-information technology
 inhospitableness
 inhumaneness
 insanity
@@ -257,48 +161,24 @@ inutility
 irregularity
 irresoluteness
 jail
-jeweler
-journalism
-journalist
 joviality
-judge
 judgment
 killed
 kindliness
-language
-law
 lawfulness
-lawyer
-lecturer
 lenience
-librarian
-linguistics
-linguistics
-literature
 logicality
 long
 lovingness
 masculinity
 materiality
-mathematics
-mathematics
-mechanical engineering
-medical science
-medicine
 mellowness
-military
-miner
-misanthropy
 mobility
-modeling
 moodiness
 morale
 morality
 mundaneness
 mushiness
-music
-musician
-mythology
 naivete
 narcissism
 nativeness
@@ -307,20 +187,13 @@ navigability
 neediness
 negativity
 nervousness
-news reader
-nurse
-occidentalism
 old
 opacity
-optician
 optimism
 ordinariness
 orientalism
 originality
 painfulness
-paintball
-painter
-painting
 pathos
 patience
 peaceful
@@ -328,50 +201,28 @@ penetrability
 perfectionism
 perspicacity
 pessimism
-pharmacist
-philanthropy
-philosophy
-photographer
-physician
-physics
-physics
-pilot
 pious
 piquancy
 placidity
-planetary science
 pleasantness
-plumber
-police
 politeness
 political party
-political science
-politician
 politics
 pollution
-polo
 popularity
-porter
 positivity
 powerfulness
 powerlessness
 pride
 privacy
-professor
 protectiveness
 provocative
-psychologist
-psychology
-psychology
 publicity
 quantifiability
-queer studies
 querulousness
 quiet
-racing
 racism
 readiness
-receptionist
 receptiveness
 reclusiveness
 regularity
@@ -384,20 +235,13 @@ restrictiveness
 rigidity
 risibility
 romanticism
-rowing
 rudeness
-rugby
-running
 rurality
-sailor
 salability
-salesman
 sameness
 sanctity
 satisfactoriness
 scandal
-scientist
-secretary
 self-centeredness
 serenity
 seriousness
@@ -407,52 +251,31 @@ short
 shrewishness
 simplicity
 sincerity
-singing
-skating
-skiing
-sledding
 sloth
 snootiness
 soapiness
-sociology
 softness
-soldier
-solicitor
 solubility
 sophistication
 specialness
 spirituality
 squash
-statistics
 sternness
 stinginess
 strangeness
-student
 stuffiness
 successful
 sufficiency
 suitability
-surfing
-surgeon
 sweetness
-swimming
-tailor
-teacher
 tenderness
-tennis
-terrorism
-theogony
-theology
 thin
 thoughtfulness
 thoughtlessness
 tolerance
 tranquillity
-travel agent
 trust
 trustworthiness
-tv cameraman
-tv presenter
 ugliness
 unapproachability
 uncertainty
@@ -478,15 +301,9 @@ usefulness
 utility
 uxoriousness
 vanity
-veterinarian
-villain
 virtu
 virulence
-volleyball
-waiter
 war
-water polo
-water sport
 waxiness
 wholeheartedness
 willingness
@@ -495,8 +312,6 @@ woodiness
 worldliness
 worth
 worthlessness
-wrestling
-writer
 wrongness
 young
 zeal

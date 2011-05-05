@@ -1,0 +1,175 @@
+accountant
+acrobat
+actor
+actress
+actuarian
+advocate
+aesthetician
+airhostess
+air steward
+ambassador
+animal rights activist
+aquanaut
+archeologist
+archer
+architect
+armorer
+artisan
+artist
+assistant
+astrologer
+astronaut
+athelet
+attorney
+author
+aviator
+baker
+balloonist
+banker
+barman
+baseball player
+basketball player
+beautician
+biologist
+body builder
+boxer
+builder
+bureaucrat
+businessman
+butcher
+calligrapher
+caretaker
+ceo
+chef
+chemist
+church officer
+city father
+civil servant
+clerk
+comedian
+commissar
+computer engineer
+computer programmer
+computer scientist
+cook
+cricketer
+criminal
+cto
+dancer
+decorator
+dentist
+designer
+diplomat
+doctor
+dramatist
+driver
+drug peddler
+dyer
+ecologist
+economist
+editor
+electrician
+engineer
+environmentalist
+ergonimist
+farmer
+fashion designer
+federal agent
+film director
+financial analyst
+fire marshall
+fire personnel
+fisherman
+flight attendant
+football player
+founder
+golfer
+gymnastist
+hairdresser
+harpooner
+hero
+heroine
+heroism
+historian
+hockey player
+hunter
+jeweler
+journalist
+judge
+king
+laminator
+lawyer
+lecturer
+librarian
+licenser
+linguist
+lobsterman
+magician
+mandarin
+mathematician
+mender
+miner
+minter
+model
+mortician
+musician
+news reader
+notary
+nurse
+oilman
+optician
+painter
+pharmacist
+philanthropist
+philosopher
+photographer
+physician
+physicist
+pilot
+plumber
+poet
+police
+politician
+porter
+postman
+postmaster
+priest
+prince
+professor
+projectionist
+psychiatrist
+psychologist
+queen
+racer
+ranger
+receptionist
+recruiter
+religious leader
+sailor
+salesman
+scientist
+secretary
+serviceman
+singer
+soccer player
+sociologist
+soldier
+solicitor
+student
+surgeon
+swimmer
+tailor
+teacher
+technician
+tennis player
+terrorist
+travel agent
+tv cameraman
+tv presenter
+venture capitalist
+veterinarian
+villain
+volleyball player
+waiter
+wrestler
+writer
