@@ -56,10 +56,12 @@ public class KmeansClustering {
 		HashSet<String> centroids = getRandomCentroid(numClusters);
 		clusters = new HashMap<String, TreeSet<WordScore>>();
 		for (int i = 0; i < numIter; ++i) {
-			for (String centroid : centroids) {
+			/*for (String centroid : centroids) {
 				System.out.print(centroid + ", ");
 			}
 			System.out.println("\n");
+      */
+      System.err.println("Iter = " + i+1 + "\r");
 			Set<String> allWords = graph.keySet();
 			for (String word : allWords) {
 				if (graph.get(word) == null) {
@@ -72,7 +74,7 @@ public class KmeansClustering {
 					continue;
 				}
 				WordScore closestWord = getClosestWord(word, centroids);
-				TreeSet<WordScore> clusterWords = clusters.get(closestWord);
+				TreeSet<WordScore> clusterWords = clusters.get(closestWord.word);
 				if (clusterWords == null) {
 					clusterWords = new TreeSet<WordScore>();
 					clusters.put(closestWord.word, clusterWords);

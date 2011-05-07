@@ -24,7 +24,7 @@ public class WordnetUtil {
 
 	private WordnetUtil() throws FileNotFoundException, JWNLException {
 		JWNL.initialize(new FileInputStream(
-				"/home/rmenon/word-clustering/data/file_properties.xml"));
+				"/bluearc/data/schatz/hadoop/rmenon/wc/file_properties.xml"));
 		dictionary = Dictionary.getInstance();
 	}
 
@@ -110,8 +110,13 @@ public class WordnetUtil {
 	}
 
 	public boolean isRelated(String word1, String word2) throws JWNLException {
-		Set<String> words = getSynonyms(word1);
-		return words.contains(word2);
+		Set<String> words = getSynonyms(word1.replace(" ", "_"));
+    /*
+    for (String word : words) {
+      System.out.println(word);
+    }
+    */
+		return words.contains(word2.replace(" ", "_"));
 	}
 
 	public static void main(String[] args) throws JWNLException,

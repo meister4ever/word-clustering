@@ -68,7 +68,7 @@ public class WikiWordCount {
 				if (wordFilter.dropWord(term)) {
 					continue;
 				}
-				output.collect(new Text(StringUtil.stem(term)), new Text(term));
+				output.collect(new Text(StringUtil.clean(term)), new Text(StringUtil.clean(term)));
 			}
 		}
 	}

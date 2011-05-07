@@ -46,7 +46,7 @@ public class WordnetGraph {
 				numChildrenMap.put(word1Idx, children + 1);
 			}
 			++count;
-			System.err.print("Done: " + count + "/" + numWords + "\r");
+			System.err.print("Done: " + count + "/" + lines.length + "\r");
 		}
 
 		newMat = new OpenMapRealMatrix(adjMat);
@@ -55,12 +55,20 @@ public class WordnetGraph {
 		}
 
 		for (i = 0; i < numWords; ++i) {
-			double word1Freq = (double) numChildrenMap.get(i);
+      Integer numChildren = numChildrenMap.get(i);
+      if (numChildren == null) {
+        continue;
+      }
+			double word1Freq = (double) numChildren;
 			for (int j = 0; j < numWords; ++j) {
 				if (i == j) {
 					continue;
 				}
-				double word2Freq = (double) numChildrenMap.get(j);
+        numChildren = numChildrenMap.get(j);
+        if (numChildren == null) {
+          continue;
+        }
+				double word2Freq = (double) numChildren;
 				double factor = 1.0 / (word1Freq * word2Freq);
 				newMat.multiplyEntry(i, j, factor);
 			}
@@ -71,6 +79,9 @@ public class WordnetGraph {
 		int numWords = words.size();
 		for (int i = 0; i < numWords; ++i) {
 			for (int j = 0; j < numWords; ++j) {
+        if (i == j) {
+          continue;
+        }
 				Double value = newMat.getEntry(i, j);
 				if (value > 0.0) {
 					System.out.println(words.get(i) + ":" + words.get(j) + "\t"

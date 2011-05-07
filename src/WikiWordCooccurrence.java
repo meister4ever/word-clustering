@@ -59,31 +59,39 @@ public class WikiWordCooccurrence {
 
       reporter.incrCounter(MyCounter.INPUT_ARTICLES, 1);
 
-      String[] terms = text.split("\\s+");
-      for (int i = 0; i < terms.length; i++) {
-        String term = terms[i];
-        String storedWordi = wfUtil.getStoredString(terms[i]);
-        reporter.incrCounter(MyCounter.INPUT_WORDS, 1);
-        if (!wfUtil.isPresent(term)) {
-          continue;
-        }
-        for (int j = i - window; j < i + window + 1; j++) {
-          if (j == i || j < 0)
-            continue;
-
-          if (j >= terms.length)
-            break;
-
-          if (!wfUtil.isPresent(terms[j])) {
+      String[] sents = text.split("\\.|\\?");
+      for (String sent : sents) {
+        String[] terms = sent.split("\\s+");
+        for (int i = 0; i < terms.length; i++) {
+          String term = terms[i];
+          String storedWordi = wfUtil.getStoredString(terms[i]);
+          reporter.incrCounter(MyCounter.INPUT_WORDS, 1);
+          if (!wfUtil.isPresent(term)) {
             continue;
           }
+          //for (int j = i - window; j < i + window + 1; j++) {
+          for (int j = 0; j < terms.length; j++) {
+            if (j == i || j < 0)
+              continue;
 
-          String storedWordj = wfUtil.getStoredString(terms[j]);
-          String outputKey = storedWordi + ":" + storedWordj;
-          try {
-            output.collect(new Text(outputKey), one);
-          } catch (Exception e) {
-            e.printStackTrace();
+            if (j >= terms.length)
+              break;
+
+            if (!wfUtil.isPresent(terms[j])) {
+              continue;
+            }
+
+            String storedWordj = wfUtil.getStoredString(terms[j]);
+            if (storedWordi.compareTo(storedWordj) == 0) {
+              continue;
+            }
+
+            String outputKey = storedWordi + ":" + storedWordj;
+            try {
+              output.collect(new Text(outputKey), one);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
           }
         }
       }

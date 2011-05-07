@@ -175,7 +175,7 @@ public class CliqueFinder {
 		 * adjList.keySet()) { if (!visited.contains(word)) { doBfs(word,
 		 * visited); System.out.println("\n"); } }
 		 */
-		KmeansClustering kmeans = new KmeansClustering(adjList, cooccurFile, 50, 10);
+		KmeansClustering kmeans = new KmeansClustering(adjList, cooccurFile, 100, 10);
 		kmeans.dumpClusters();
 	}
 

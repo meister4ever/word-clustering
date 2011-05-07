@@ -29,7 +29,7 @@ public class WordnetCooccurence {
 			Mapper<LongWritable, Text, Text, IntWritable> {
 		private int pathLen = 3;
 		private IntWritable one = new IntWritable(1);
-		private ArrayList<String> words;
+		private ArrayList<String> words = new ArrayList<String>();
 		private WordnetUtil wnUtil;
 
 		@Override
@@ -79,15 +79,15 @@ public class WordnetCooccurence {
 	}
 
 	public static class MyReducer extends MapReduceBase implements
-			Reducer<Text, DoubleWritable, Text, DoubleWritable> {
+			Reducer<Text, IntWritable, Text, IntWritable> {
 
 		@Override
 		public void configure(JobConf job) {
 		}
 
 		@Override
-		public void reduce(Text key, Iterator<DoubleWritable> values,
-				OutputCollector<Text, DoubleWritable> output, Reporter reporter)
+		public void reduce(Text key, Iterator<IntWritable> values,
+				OutputCollector<Text, IntWritable> output, Reporter reporter)
 				throws IOException {
 			while (values.hasNext()) {
 				output.collect(key, values.next());
@@ -110,6 +110,7 @@ public class WordnetCooccurence {
 		System.out.println(" - wordFrequencies: " + args[3]);
 
 		conf.set("topWords", args[3]);
+		conf.setInt("pathLen", Integer.parseInt(args[4]));
 		conf.setJobName("WordnetCooccurence");
 		conf.setNumMapTasks(48);
 		conf.setNumReduceTasks(reduceTasks);
@@ -123,9 +124,9 @@ public class WordnetCooccurence {
 		conf.setMapperClass(MyMapper.class);
 		conf.setReducerClass(MyReducer.class);
 		conf.setMapOutputKeyClass(Text.class);
-		conf.setMapOutputValueClass(DoubleWritable.class);
+		conf.setMapOutputValueClass(IntWritable.class);
 		conf.setOutputKeyClass(Text.class);
-		conf.setOutputValueClass(DoubleWritable.class);
+		conf.setOutputValueClass(IntWritable.class);
 
 		FileInputFormat.setInputPaths(conf, new Path(inputPath));
 		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
