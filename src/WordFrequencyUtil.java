@@ -14,10 +14,34 @@ public class WordFrequencyUtil {
       String[] parts = line.split("\t");
       String stemmedWord = StringUtil.stem(parts[0]);
       Integer freq = Integer.parseInt(StringUtil.clean(parts[1]));
-      wordFreq.put(stemmedWord, freq);
+      Integer currentFreq = wordFreq.get(stemmedWord);
+      if (currentFreq == null) {
+    	  wordFreq.put(stemmedWord, freq);
+      } else {
+    	  wordFreq.put(stemmedWord, freq + currentFreq);
+      }
+      
       stemmedWordMap.put(stemmedWord, StringUtil.clean(parts[0]));
     }
   }
+  
+  public WordFrequencyUtil(String filename) {
+	    String textStr = FileUtil.ReadFileContent(filename);
+	    String[] lines = textStr.split("\n");
+	    for (String line : lines) {
+	      String[] parts = line.split("\t");
+	      String stemmedWord = StringUtil.stem(parts[0]);
+	      Integer freq = Integer.parseInt(StringUtil.clean(parts[1]));
+	      Integer currentFreq = wordFreq.get(stemmedWord);
+	      if (currentFreq == null) {
+	    	  wordFreq.put(stemmedWord, freq);
+	      } else {
+	    	  wordFreq.put(stemmedWord, freq + currentFreq);
+	      }
+	      
+	      stemmedWordMap.put(stemmedWord, StringUtil.clean(parts[0]));
+	    }
+	  }
   
   public Integer getFrequency(String word) {
     String stemmedWord = StringUtil.stem(word);
