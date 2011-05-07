@@ -1,249 +1,152 @@
-
-friendly:	approachable, social
+friendly:approachable, social
 aloof:
-
-energetic:	active
+energetic:active
 lethargic:
-
-cautious:	submissive
-adventurous:	rebelious
-
+cautious:submissive
+adventurous:rebelious
 aggressive:
 passive:
-
 angry:
-
-violent:	hostile
-peaceful:	calm
-
-strong:	powerful
+violent:hostile
+peaceful:calm
+strong:powerful
 weak:
-
-good:	saintly
-evil:	notorious, villian
-
-colorful:	interesting
-dull:	bland, insipid
-
-negroid:	
+good:saintly
+evil:notorious, villian
+colorful:interesting
+dull:bland, insipid
+negroid:
 caucasian:
 asian:
-
-humility:	humble, inferior
-generousity:	philanthropist
-selfishness:	misanthropic
-
-flexible:	tolerant
-rigid:	stubborn, intolerant
-
-significant:	important, famous
-undistinguished:	insignificant
-
-intelligent:	smart, wise, cunning, knowledgable
-stupid:	dumb, foolish, naive, ignorant
-
-funny:	humorous, levity
-gravity:	seriousness
-
-thrifty:	cheap, parsimonious
+humility:humble, inferior
+generousity:philanthropist
+selfishness:misanthropic
+flexible:tolerant
+rigid:stubborn, intolerant
+significant:important, famous
+undistinguished:insignificant
+intelligent:smart, wise, cunning, knowledgable
+stupid:dumb, foolish, naive, ignorant
+funny:humorous, levity
+gravity:seriousness
+thrifty:cheap, parsimonious
 efficient:
-inefficient:	wasteful, lavish
-
-courageous:	brave, heroic
-cowardly:	frightened
-
-fast:	rapid, speedy, quick
-slow:	sluggish, 
-
-lucid:	clear, attentive, sane, logical
-crazy:	lunatic, insane, irrational
-
-awkward:	clumsy,
-graceful:	elegant
-
-fat:	obese
-lean:	skinny
-
-difficult:	hard
-easy:	simple
-
-constructive:	builder, founder
-destructive:	harmful
-
-failure:	failed
-success:	succeeded
-
-honest:		trustworthy
-corrupt:	untrustworthy, crooked, criminal
-
-clean:	sterile
-dirty:	filth
-
-attractive:	beautiful, magnetic
-ugly:	repulsive
-
-masculine:	male, boy
-feminine:	female, girl
-gay: lesbian
-
-rich:	prosperous
-poor:	underclass
-
+inefficient:wasteful, lavish
+courageous:brave, heroic
+cowardly:frightened
+fast:rapid, speedy, quick
+slow:sluggish, 
+lucid:clear, attentive, sane, logical
+crazy:lunatic, insane, irrational
+awkward:clumsy,
+graceful:elegant
+fat:obese
+lean:skinny
+difficult:hard
+easy:simple
+constructive:builder, founder
+destructive:harmful
+failure:failed
+success:succeeded
+honest:trustworthy
+corrupt:untrustworthy, crooked, criminal
+clean:sterile
+dirty:filth
+attractive:beautiful, magnetic
+ugly:repulsive
+masculine:male, boy
+feminine:female, girl
+gay:lesbian
+rich:prosperous
+poor:underclass
 fickle:
 steadfast:
-
-silent:	quiet, introvert
-loud:	boistrous, vociferous, extrovert
-
-sophisticated:	urbane
-naive:	simple
-
+silent:quiet, introvert
+loud:boistrous, vociferous, extrovert
+sophisticated:urbane
+naive:simple
 loyal:
 disloyal:
-
-religious:	pious
-atheist:	
-
+religious:pious
+atheist:
 happy:
-sad:	depressed
-
+sad:depressed
 optimistic:
-pessimist:	skeptical
-
+pessimist:skeptical
 democratic:
 republican:
-
-leadership:	
-
-mature:	elderly,
-young:	youth
-
+leadership:
+mature:elderly,
+young:youth
 positive:
 negative:
-
 polite:
-rude:	impolite
-
+rude:impolite
 coherent:
 incoherent:
-
-romantic:	love
+romantic:love
 unrealistic:
 practical:
-
-soft:	cuddly
-harsh:	hard
-
+soft:cuddly
+harsh:hard
 cold:
-hot:	
-
+hot:
 dark:
 light:
-
 freedom:
-repression:	constraint
-
-foward-looking:	futuristic
-backwards-looking:	nostalgic
+repression:constraint
+foward-looking:futuristic
+backwards-looking:nostalgic
 greatness
-
 guilt:
 innocence:
-
 jealous:
-
 narrow:
 broad:
-
-nobility:	royal
-ignoble:	dishonorable
-
+nobility:royal
+ignoble:dishonorable
 rough:
 smooth:
-
-secretive:	stealthy
-
+secretive:stealthy
 healthy:
 sick:
-
-curvy:	circular
+curvy:circular
 straight:
-
-
-creative:	inventor
-
+creative:inventor
 mathematics: statistical
-
-computational:	computer, information
-
-engineering:	electrical, mechanical, technology
-
-architecture:	buildings
-
+computational:computer, information
+engineering:electrical, mechanical, technology
+architecture:buildings
 cricket:
-
 baseball:
-
 basketball:
-
-business:	commerce
-
-science:	biology, physics, chemistry, astronomy
-
+business:commerce
+science:biology, physics, chemistry, astronomy
 artistic:
-
-cinema:	movies, film
-
+cinema:movies, film
 football:
-
 golf:
-
-sports:	athletics
-
-fashion:	apparel, decoration
-
+sports:athletics
+fashion:apparel, decoration
 economics:
-
 photography:
-
 music:
-
-literature:	books
-
+literature:books
 tennis:
-
 religion:
-
 archeology:
-
-medicine:	doctor, drugs, physician
-
-academic:	professor, university
-
-actor:	theatre, drama
-
-legal:	lawyer, justice
-
-politics:	election, government
-
-military:	army, war
-
-diplomatic:	ambassador, embassy
-
-finance:	investment
-
-nationalism:	country
-
-language:	lingual
-
-automotive:	car
-
-transportation:	train, bus, airplane
-
-internet:	www, e-mail
-
-entertainment:	television, radio, games
-
+medicine:doctor, drugs, physician
+academic:professor, university
+actor:theatre, drama
+legal:lawyer, justice
+politics:election, government
+military:army, war
+diplomatic:ambassador, embassy
+finance:investment
+nationalism:country
+language:lingual
+automotive:car
+transportation:train, bus, airplane
+internet:www, e-mail
+entertainment:television, radio, games
 hobbies:
-
-
