@@ -3,7 +3,7 @@ aloof:
 energetic:active
 lethargic:
 cautious:submissive
-adventurous:rebelious
+adventurous:rebellious
 aggressive:
 passive:
 angry:
@@ -12,20 +12,20 @@ peaceful:calm
 strong:powerful
 weak:
 good:saintly
-evil:notorious, villian
+evil:notorious, villain
 colorful:interesting
 dull:bland, insipid
-negroid:
+negro:
 caucasian:
 asian:
 humility:humble, inferior
-generousity:philanthropist
+generosity:philanthropist
 selfishness:misanthropic
 flexible:tolerant
 rigid:stubborn, intolerant
 significant:important, famous
 undistinguished:insignificant
-intelligent:smart, wise, cunning, knowledgable
+intelligent:smart, wise, cunning, knowledgeable
 stupid:dumb, foolish, naive, ignorant
 funny:humorous, levity
 gravity:seriousness
@@ -62,7 +62,7 @@ poor:underclass
 fickle:
 steadfast:
 silent:quiet, introvert
-loud:boistrous, vociferous, extrovert
+loud:boisterous, vociferous, extrovert
 sophisticated:urbane
 naive:simple
 loyal:
@@ -95,8 +95,8 @@ dark:
 light:
 freedom:
 repression:constraint
-foward-looking:futuristic
-backwards-looking:nostalgic
+foward:futuristic
+backward:nostalgic
 greatness
 guilt:
 innocence:
