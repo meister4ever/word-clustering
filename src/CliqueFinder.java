@@ -3,12 +3,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer;
-
 public class CliqueFinder {
 
 	private int connectionPerNode = 3;
-  private String cooccurFile;
+	private String cooccurFile;
 	private HashMap<String, HashMap<String, Double>> adjList;
 
 	public CliqueFinder(String filename, double scoreThreshold,
