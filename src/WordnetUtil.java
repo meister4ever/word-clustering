@@ -51,6 +51,9 @@ public class WordnetUtil {
 					}
 					List<PointerType> allPtrs = PointerType.getAllPointerTypes();
 					for (PointerType type : allPtrs) {
+						if (type == PointerType.ANTONYM) {
+							continue;
+						}
 						expansions.addAll(getWordsFromDomainType(synset, type));
 					}
 				}
