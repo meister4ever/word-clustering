@@ -21,6 +21,7 @@ public class WordnetUtil {
 
 	private static WordnetUtil wordnetUtil = null;
 	private Dictionary dictionary;
+  private PointerUtils ptUtils = PointerUtils.getInstance();
 
 	private WordnetUtil() throws FileNotFoundException, JWNLException {
 		JWNL.initialize(new FileInputStream(
@@ -56,11 +57,45 @@ public class WordnetUtil {
 						}
 						expansions.addAll(getWordsFromDomainType(synset, type));
 					}
+          // Get hyponyms (direct) and hypernym.
+          //expansions.addAll(getHyponyms(synset));
+          //expansions.addAll(getHypernyms(synset));
 				}
 			}
 		}
 		return expansions;
 	}
+
+
+  public Set<String> getHypernyms(Synset synset) throws JWNLException {
+    Set<String> words = new TreeSet<String>();
+    PointerTargetNodeList hypernyms = ptUtils.getDirectHypernyms(synset);
+    for (int i = 0; i < hypernyms.size(); ++i) {
+      PointerTargetNode pt = (PointerTargetNode) hypernyms.get(i);
+      Synset hypernym = pt.getSynset();
+      if (hypernym != null) {
+        for (Word word : hypernym.getWords()) {
+          words.add(StringUtil.clean(word.getLemma()));
+        }
+      }
+    }
+    return words;
+  }
+
+  public Set<String> getHyponyms(Synset synset) throws JWNLException {
+    Set<String> words = new TreeSet<String>();
+    PointerTargetNodeList hyponyms = ptUtils.getDirectHyponyms(synset);
+    for (int i = 0; i < hyponyms.size(); ++i) {
+      PointerTargetNode pt = (PointerTargetNode) hyponyms.get(i);
+      Synset hyponym = pt.getSynset();
+      if (hyponym != null) {
+        for (Word word : hyponym.getWords()) {
+          words.add(StringUtil.clean(word.getLemma()));
+        }
+      }
+    }
+    return words;
+  }
 
 	// Return words from PointerTargetNodeList
 	public Set<String> getWordsFromPtrNodeList(PointerTargetNodeList list)
@@ -99,7 +134,6 @@ public class WordnetUtil {
 	// Given a synset, return all associated words to this synset.
 	public Set<String> getAssociatedWords(Synset synset) throws JWNLException {
 		Set<String> words = new TreeSet<String>();
-		PointerUtils ptUtils = PointerUtils.getInstance();
 
 		// Also sees.
 		words.addAll(getWordsFromPtrNodeList(ptUtils.getAlsoSees(synset)));

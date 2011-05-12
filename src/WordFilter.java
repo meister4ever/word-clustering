@@ -53,8 +53,6 @@ public class WordFilter {
     }
 
 		if (!pos.startsWith("NN") &&
-			!pos.startsWith("NP") &&
-			!pos.startsWith("NR") &&
 			!pos.startsWith("RB") &&
 			!pos.startsWith("V") &&
 			!pos.startsWith("JJ")) {

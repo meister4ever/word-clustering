@@ -81,10 +81,12 @@ public class TopicExpander {
 			TreeSet<WordScore> clusterWords = new TreeSet<WordScore>();
 			clusters.put(topicWord, clusterWords);
 			clusterWords.add(new WordScore(topicWord, 1.0));
-			String[] otherWords = parts[1].split(",");
-			for (String word : otherWords) {
-				clusterWords.add(new WordScore(StringUtil.clean(word), 1.0));
-			}
+      if (parts.length > 1 && StringUtil.clean(parts[1]).length() > 0) {
+        String[] otherWords = parts[1].split(",");
+        for (String word : otherWords) {
+          clusterWords.add(new WordScore(StringUtil.clean(word), 1.0));
+        }
+      }
 		}
 
 		// For each word, try to assign it to best k clusters.
@@ -107,9 +109,12 @@ public class TopicExpander {
 					.get(topic)));
 			if (clusterFrequency < minFreq) {
 				weakClusters.put(topic, clusters.get(topic));
-				clusters.remove(topic);
 			}
 		}
+
+    for (String topic : weakClusters.keySet()) {
+      clusters.remove(topic);
+    }
 	}
 
 	long getClusterFrequency(TreeSet<WordScore> clusterWords) {
@@ -139,6 +144,7 @@ public class TopicExpander {
 				}
 				double clusterAffinity = getClusterAffinity(currentWord,
 						clusterWords, minConnections);
+        System.err.println("Cluster affinity: " + clusterAffinity);
 				if (clusterAffinity >= affinityThreshold) {
 					bestClusters.add(new WordScore(topic, clusterAffinity));
 					// If the word is part of more than maxAllotment number of
@@ -159,14 +165,18 @@ public class TopicExpander {
 		int connections = 0;
 		HashMap<String, Double> level2Map = adjList.get(currentWord);
 		if (level2Map != null) {
+      System.err.println(currentWord);
 			for (WordScore clusterWord : clusterWords) {
+        System.err.print(clusterWord);
 				Double score = level2Map.get(clusterWord);
 				if (score != null) {
 					affinity += score;
 					connections++;
 				}
 			}
+      System.err.println("\n");
 		}
+    System.err.println("Connections: " + connections);
 		if (connections < minConnections) {
 			affinity = 0.0;
 		}
@@ -194,6 +204,10 @@ public class TopicExpander {
 	}
 
 	public static void main(String[] args) {
+    if (args.length != 7) {
+      System.err.println("Usage: <prog> seedWordsFile graphFile freqFile edgeThreshold minFreqThreshold maxFreqThreshold affinityThreshold");
+      return;
+    }
 		String seedWordsFile = args[0];
 		String graphFile = args[1];
 		String freqFile = args[2];

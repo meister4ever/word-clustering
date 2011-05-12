@@ -6,4 +6,4 @@ HPATH="/user/$USERNAME/word_clustering/"
 
 hadoop fs -rmr wikicoccur
 
-hadoop jar WordCluster.jar WikiWordCooccurrence wiki/ wikicoccur/ 3 48 "${HPATH}/data/top10KWords.unstemmed.txt"
+hadoop jar WordCluster.jar WikiWordCooccurrence wiki/ wikicoccur/ 3 48 "${HPATH}/data/newTop10KWords.unstemmed.txt"

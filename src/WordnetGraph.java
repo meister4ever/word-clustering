@@ -38,6 +38,12 @@ public class WordnetGraph {
 			String word2 = StringUtil.clean(words[1]);
 			Integer word1Idx = wordIndex.get(word1);
 			Integer word2Idx = wordIndex.get(word2);
+      if (word1Idx == null) {
+        System.err.println(word1 + " not found");
+      }
+      if (word2Idx == null) {
+        System.err.println(word2 + " not found");
+      }
 			adjMat.setEntry(word1Idx, word2Idx, 1.0);
 			Integer children = numChildrenMap.get(word1Idx);
 			if (children == null) {
@@ -50,8 +56,10 @@ public class WordnetGraph {
 		}
 
 		newMat = new OpenMapRealMatrix(adjMat);
+    OpenMapRealMatrix tmpMat = new OpenMapRealMatrix(adjMat);
 		for (i = 0; i < pathLen - 1; ++i) {
-			newMat = newMat.multiply(adjMat);
+			tmpMat = tmpMat.multiply(adjMat);
+      newMat = newMat.add(tmpMat);
 		}
 
 		for (i = 0; i < numWords; ++i) {

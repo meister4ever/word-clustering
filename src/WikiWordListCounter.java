@@ -34,7 +34,7 @@ public class WikiWordListCounter {
 
 		@Override
 		public void configure(JobConf job) {
-			String wordlistFile = job.get("wordListFile");
+			String wordlistFile = job.get("wordlist");
 			String textStr = HdfsFileUtil.ReadFileContent(wordlistFile, job);
 			String[] lines = textStr.split("\n");
 			for (String word : lines) {
