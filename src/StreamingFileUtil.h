@@ -10,10 +10,12 @@ class StreamingFileUtil {
  private:
   ifstream ifs;
   string currentLine;
+  char *buf;
 
  public:
   StreamingFileUtil(const string &filename) {
     cerr << "Opening file : " << filename << endl;
+    buf = new char[10485760];
     ifs.open(filename.c_str());
   }
 
@@ -27,8 +29,7 @@ class StreamingFileUtil {
   }
 
   string getNextLineI() {
-    char buf[8192];
-    ifs.getline(buf, 8191);
+    ifs.getline(buf, 10485759);
     return buf;
   }
 
@@ -37,6 +38,7 @@ class StreamingFileUtil {
   }
 
   void close() {
+    delete[] buf;
     ifs.close();
   }
 };
