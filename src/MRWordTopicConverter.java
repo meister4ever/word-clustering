@@ -44,7 +44,7 @@ public class MRWordTopicConverter {
 	}
 
 	public static class MyReducer extends MapReduceBase implements
-			Reducer<Text, Text, NullWritable, Text> {
+			Reducer<Text, Text, Text, Text> {
 
 		@Override
 		public void configure(JobConf job) {
@@ -52,10 +52,10 @@ public class MRWordTopicConverter {
 
 		@Override
 		public void reduce(Text key, Iterator<Text> values,
-				OutputCollector<NullWritable, Text> output, Reporter reporter)
+				OutputCollector<Text, Text> output, Reporter reporter)
 				throws IOException {
 			while (values.hasNext()) {
-				output.collect(NullWritable.get(), values.next());
+				output.collect(key, values.next());
 			}
 		}
 	}
@@ -66,12 +66,12 @@ public class MRWordTopicConverter {
 		String inputPath = args[0];
 		String outputPath = args[1];
 
-		int reduceTasks = Integer.parseInt(args[2]);
+		//int reduceTasks = Integer.parseInt(args[2]);
 
 		JobConf conf = new JobConf(MRWordTopicConverter.class);
 
 		conf.setJobName("MRWordTopicConverter");
-		conf.setNumReduceTasks(reduceTasks);
+		conf.setNumReduceTasks(0);
 
 		conf.set("mapred.task.timeout", "12000000");
 		//conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
@@ -83,7 +83,7 @@ public class MRWordTopicConverter {
 		conf.setReducerClass(MyReducer.class);
 		conf.setMapOutputKeyClass(Text.class);
 		conf.setMapOutputValueClass(Text.class);
-		conf.setOutputKeyClass(NullWritable.class);
+		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(Text.class);
 
 		FileInputFormat.setInputPaths(conf, new Path(inputPath));

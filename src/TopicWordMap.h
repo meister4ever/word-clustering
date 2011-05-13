@@ -25,6 +25,7 @@ class TopicWordMap {
       vector<string> parts = StringUtil::split(line, ":");
       string topic = StringUtil::clean(parts[0]);
       vector<string> topicWords = StringUtil::split(parts[1], ",");
+      topicWords.push_back(topic);
       set<int> topicWordIndices;
       for (int i = 0; i < topicWords.size(); ++i) {
         int idx;

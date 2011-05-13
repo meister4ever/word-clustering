@@ -12,6 +12,9 @@ public class TopicWordMap {
 		String[] lines = fileContent.split("\n");
 		for (String line : lines) {
 			String[] parts = line.split(":");
+      if (parts.length < 2) {
+        continue;
+      }
 			String topic = StringUtil.clean(parts[0]);
 			HashSet<Integer> topicWordIndices = new HashSet<Integer>();
 			Integer topicIdx = wordIdMap.getIndex(topic);

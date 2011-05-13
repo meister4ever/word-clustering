@@ -44,6 +44,9 @@ public class WordTopicConverter {
 		
 		for (Integer wordIdx : wordIndices) {
 			HashSet<String> topics = topicWordMap.getTopicsForWordId(wordIdx);
+      if (topics == null) {
+        continue;
+      }
 			Double wordProb = (double)freqMap.get(wordIdx)/(double)totalFreq;
 			for (String topic : topics) {
 				Double curProb = topicProbMap.get(topic);
@@ -52,7 +55,6 @@ public class WordTopicConverter {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append(entityName + "\t");
 		boolean first = true;
 		for (String topic : allTopics) {
 			if (!first) {
