@@ -17,7 +17,7 @@ public class WordTopicConverter {
 	
 	String convertWords2Topics(String line) {
 		Integer pos = line.indexOf(':');
-		String entityName = line.substring(0, pos-1);
+		String entityName = line.substring(0, pos);
 		String[] parts = line.substring(pos + 1).split(",");
 		
 		HashMap<Integer, Integer> freqMap = new HashMap<Integer, Integer>();

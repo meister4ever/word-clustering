@@ -38,25 +38,8 @@ public class MRWordTopicConverter {
 			
 			String discountedProbStr = wordTopicConverter.convertWords2Topics(value.toString());
 			int pos = value.toString().indexOf(':');
-			String entity = StringUtil.clean(value.toString()).substring(0, pos-1);
+			String entity = value.toString().substring(0, pos);
 			output.collect(new Text(entity), new Text(discountedProbStr));
-		}
-	}
-
-	public static class MyReducer extends MapReduceBase implements
-			Reducer<Text, Text, Text, Text> {
-
-		@Override
-		public void configure(JobConf job) {
-		}
-
-		@Override
-		public void reduce(Text key, Iterator<Text> values,
-				OutputCollector<Text, Text> output, Reporter reporter)
-				throws IOException {
-			while (values.hasNext()) {
-				output.collect(key, values.next());
-			}
 		}
 	}
 
@@ -80,7 +63,6 @@ public class MRWordTopicConverter {
 		//conf.setOutputFormat(TextOutputFormat.class);
 
 		conf.setMapperClass(MyMapper.class);
-		conf.setReducerClass(MyReducer.class);
 		conf.setMapOutputKeyClass(Text.class);
 		conf.setMapOutputValueClass(Text.class);
 		conf.setOutputKeyClass(Text.class);

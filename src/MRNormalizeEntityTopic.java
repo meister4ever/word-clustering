@@ -66,6 +66,7 @@ public class MRNormalizeEntityTopic {
 		conf.setNumReduceTasks(0);
 
 		conf.set("mapred.task.timeout", "12000000");
+    conf.set("topicStatFile", args[2]);
 
 		conf.setMapperClass(MyMapper.class);
 		conf.setMapOutputKeyClass(Text.class);
