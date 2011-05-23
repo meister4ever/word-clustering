@@ -155,6 +155,21 @@ public class WordnetUtil {
     */
 		return words.contains(word2.replace(" ", "_"));
 	}
+	
+	public Set<String> getAntonyms(String word) throws JWNLException {
+		Set<String> expansions = new TreeSet<String>();
+		List<POS> allPos = POS.getAllPOS();
+		for (POS pos : allPos) {
+			IndexWord indexWord = dictionary.getIndexWord(pos, word);
+			if (indexWord != null) {
+				Synset[] synsets = indexWord.getSenses();
+				for (Synset synset : synsets) {
+					expansions.addAll(getWordsFromDomainType(synset, PointerType.ANTONYM));
+				}
+			}
+		}
+		return expansions;
+	}
 
 	public static void main(String[] args) throws JWNLException,
 			FileNotFoundException {
