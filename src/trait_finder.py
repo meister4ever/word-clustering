@@ -9,7 +9,7 @@ def add_value(key, value, dictionary):
   if not key in dictionary:
     dictionary[key] = []
   if value not in dictionary[key]:
-    dictionary[key].append(value)
+    dictionary[key].append(value.strip())
 
 
 
@@ -19,7 +19,7 @@ def add_list_value(key, list_value, dictionary):
     dictionary[key] = []
   for value in list_value:
     if value not in dictionary[key]:
-      dictionary[key].append(value)
+      dictionary[key].append(value.strip())
 
 
 
@@ -62,9 +62,7 @@ def add_if_trait(trait_name, trait_syn_size, thesaurus_file, trait_dict):
 
   # Check for the conditions to treat the word as a trait.
   if adj_cnt >= total_syns/2 and total_syns > MIN_SYNS:
-    print '%s\t%s' % (trait_name.lower(), '\t'.join(all_syns))
-    #add_list_value(trait_name, all_syns, trait_dict)
-     
+    add_list_value(trait_name, all_syns, trait_dict)
 
 
 
@@ -105,6 +103,6 @@ def main():
 
   # Print out the traits we filtered from the thesaurus file.
   for word, trait_list in trait_dict.items():
-    print '%s => %s' % (word, str(trait_list))
+    print '%s:%s' % (word, ','.join(trait_list).lower())
 
 main()
