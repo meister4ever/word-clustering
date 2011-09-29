@@ -21,8 +21,13 @@ import org.apache.hadoop.mapred.Reporter;
 
 @SuppressWarnings("deprecation")
 public class MREntityCrossSimilarity {
+
+  private static class MyText extends Text implements Comparable {
+
+  }
+
 	private static class MyMapper extends MapReduceBase implements
-			Mapper<Text, Text, Text, Text> {
+			Mapper<LongWritable, Text, Text, Text> {
 		// We should know total records to do the cross similarity.
 		int totalRecords = 0;
 
@@ -32,16 +37,18 @@ public class MREntityCrossSimilarity {
 		}
 
 		@Override
-		public void map(Text key, Text value,
+		public void map(LongWritable key, Text value,
 				OutputCollector<Text, Text> output, Reporter reporter)
 				throws IOException {
 			String[] parts = value.toString().split("\t");
 			Integer recordNumber = Integer.parseInt(parts[0]);
 			String newKey = String.format("%010d", recordNumber);
-			output.collect(new Text(newKey), new Text("0\t" + value.toString()));
-			for (int i = 0; i < totalRecords; ++i) {
+			output.collect(new Text(newKey), new Text("0\t" + parts[1]));
+      System.out.println(newKey + " => " + "0\t" + parts[1]);
+			for (int i = 1; i <= totalRecords; ++i) {
 				newKey = String.format("%010d", i);
-				output.collect(new Text(newKey), new Text("1\t" + value.toString()));
+				output.collect(new Text(newKey), new Text("1\t" + parts[1]));
+        System.out.println(newKey + " => " + "1\t" + parts[1]);
 			}
 		}
 	}
@@ -68,15 +75,19 @@ public class MREntityCrossSimilarity {
 				throws IOException {
 			// TODO Auto-generated method stub
 			String firstValue = "";
-		    while (values.hasNext()) {
-		    	String currentValue = values.next().toString().split("\t")[1];
-		    	if (firstValue == "") {
-		    		firstValue = currentValue;
-		    	}
-		    	if (currentValue != firstValue) {
-		    		output.collect(new Text(firstValue + " X " + currentValue), new Text(""));
-		    	}
-		    }
+      while (values.hasNext()) {
+        String val = values.next().toString();
+        System.out.println(key + " == " + val);
+        String currentValue = val.split("\t")[1];
+        if (firstValue == "") {
+          firstValue = currentValue;
+          System.out.println("First value: " + firstValue);
+        }
+        if (currentValue != firstValue) {
+          System.out.println(firstValue + " X " + currentValue);
+          output.collect(new Text(firstValue), new Text(firstValue + " X " + currentValue));
+        }
+      }
 		}
 	}
 
