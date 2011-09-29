@@ -31,58 +31,43 @@ public class MREntityCrossSimilarity {
 		private String key1;
 		private String key2;
 
-    MyText() {
-      this.key1 = null;
-      this.key2 = null;
-    }
+		MyText() {
+			this.key1 = null;
+			this.key2 = null;
+		}
 
 		MyText(String key1, String key2) {
 			this.key1 = key1;
 			this.key2 = key2;
 		}
 
-/*
-		@Override
-		public void readFields(DataInput in) throws IOException {
-			// TODO Auto-generated method stub
-      int strLen = in.readInt();
-      String inStr = "";
-      for (int i = 0; i < strLen; ++i) {
-        inStr += in.readChar();
-      }
-      String[] parts = inStr.split("\t");
-      key = parts[0];
-      value = parts[1];
-
-			int keyLen = in.readInt();
-			byte[] keyBytes = new byte[keyLen];
-			in.readFully(keyBytes);
-			key = new String(keyBytes);
-
-			int valueLen = in.readInt();
-			byte[] valueBytes = new byte[valueLen];
-			in.readFully(valueBytes);
-			value = new String(valueBytes);
-
-		}
-
-		@Override
-		public void write(DataOutput out) throws IOException {
-			// TODO Auto-generated method stub
-      String outStr = key + "\t" + value;
-      out.writeInt(outStr.length());
-      out.writeChars(key + "\t" + value);
-
-			byte[] keyBytes = key.getBytes();
-			out.writeInt(keyBytes.length);
-			out.write(keyBytes);
-
-			byte[] valueBytes = value.getBytes();
-			out.writeInt(valueBytes.length);
-			out.write(valueBytes);
-
-		}
-    */
+		/*
+		 * @Override public void readFields(DataInput in) throws IOException {
+		 * // TODO Auto-generated method stub int strLen = in.readInt(); String
+		 * inStr = ""; for (int i = 0; i < strLen; ++i) { inStr +=
+		 * in.readChar(); } String[] parts = inStr.split("\t"); key = parts[0];
+		 * value = parts[1];
+		 * 
+		 * int keyLen = in.readInt(); byte[] keyBytes = new byte[keyLen];
+		 * in.readFully(keyBytes); key = new String(keyBytes);
+		 * 
+		 * int valueLen = in.readInt(); byte[] valueBytes = new byte[valueLen];
+		 * in.readFully(valueBytes); value = new String(valueBytes);
+		 * 
+		 * }
+		 * 
+		 * @Override public void write(DataOutput out) throws IOException { //
+		 * TODO Auto-generated method stub String outStr = key + "\t" + value;
+		 * out.writeInt(outStr.length()); out.writeChars(key + "\t" + value);
+		 * 
+		 * byte[] keyBytes = key.getBytes(); out.writeInt(keyBytes.length);
+		 * out.write(keyBytes);
+		 * 
+		 * byte[] valueBytes = value.getBytes();
+		 * out.writeInt(valueBytes.length); out.write(valueBytes);
+		 * 
+		 * }
+		 */
 
 		@Override
 		public int compareTo(MyText rhs) {
@@ -94,9 +79,9 @@ public class MREntityCrossSimilarity {
 			return compareRes;
 		}
 
-    public String getKey1() {
-      return key1;
-    }
+		public String getKey1() {
+			return key1;
+		}
 	}
 
 	private static class MyMapper extends MapReduceBase implements
@@ -166,30 +151,26 @@ public class MREntityCrossSimilarity {
 		}
 	}
 
-  private static final class SortReducerByValuesValueGroupingComparator implements RawComparator {
-    public int compare(byte[] text1, int start1, int length1, byte[] text2, int start2, int length2) {
-      // look at first character of each text byte array
-      String text1Str = new String(text1, start1, length1);
-      String text2Str = new String(text2, start2, length2);
-      
-      String key1 = text1Str.split("\t")[0];
-      String key2 = text2Str.split("\t")[0];
-    
-      return key1.compareTo(key2);
-    }
+	private static final class SortReducerByValuesValueGroupingComparator
+			implements RawComparator<MyText> {
+		public int compare(byte[] text1, int start1, int length1, byte[] text2,
+				int start2, int length2) {
+			// look at first character of each text byte array
+			String text1Str = new String(text1, start1, length1);
+			String text2Str = new String(text2, start2, length2);
 
-    /*
-    public int compare(Text o1, Text o2) {
-      String text1Str = o1.toString();
-      String text2Str = o2.toString();
+			String key1 = text1Str.split("\t")[0];
+			String key2 = text2Str.split("\t")[0];
 
-      String key1 = text1Str.split("\t")[0];
-      String key2 = text2Str.split("\t")[0];
-    
-      return key1.compareTo(key2);
-    }
-    */
-  }
+			return key1.compareTo(key2);
+		}
+
+		@Override
+		public int compare(MyText o1, MyText o2) {
+			// TODO Auto-generated method stub
+			return o2.key1.compareTo(o2.key2);
+		}
+	}
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws IOException {
@@ -215,7 +196,8 @@ public class MREntityCrossSimilarity {
 		conf.setMapperClass(MyMapper.class);
 		conf.setPartitionerClass(MyPartitioner.class);
 		conf.setReducerClass(MyReducer.class);
-    conf.setOutputValueGroupingComparator(SortReducerByValuesValueGroupingComparator.class);
+		conf
+				.setOutputValueGroupingComparator(SortReducerByValuesValueGroupingComparator.class);
 
 		conf.setMapOutputKeyClass(MyText.class);
 		conf.setMapOutputValueClass(Text.class);
