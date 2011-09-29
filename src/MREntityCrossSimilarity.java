@@ -1,3 +1,4 @@
+import java.lang.Comparable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -6,8 +7,8 @@ import java.util.Iterator;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
@@ -26,18 +27,33 @@ import org.apache.hadoop.mapred.Reporter;
 @SuppressWarnings("deprecation")
 public class MREntityCrossSimilarity {
 
-	private static class MyText implements WritableComparable<MyText> {
-		private String key;
-		private String value;
+	private static class MyText implements Comparable<MyText> {
+		private String key1;
+		private String key2;
 
-		MyText(String key, String value) {
-			this.key = key;
-			this.value = value;
+    MyText() {
+      this.key1 = null;
+      this.key2 = null;
+    }
+
+		MyText(String key1, String key2) {
+			this.key1 = key1;
+			this.key2 = key2;
 		}
 
+/*
 		@Override
 		public void readFields(DataInput in) throws IOException {
 			// TODO Auto-generated method stub
+      int strLen = in.readInt();
+      String inStr = "";
+      for (int i = 0; i < strLen; ++i) {
+        inStr += in.readChar();
+      }
+      String[] parts = inStr.split("\t");
+      key = parts[0];
+      value = parts[1];
+
 			int keyLen = in.readInt();
 			byte[] keyBytes = new byte[keyLen];
 			in.readFully(keyBytes);
@@ -47,11 +63,16 @@ public class MREntityCrossSimilarity {
 			byte[] valueBytes = new byte[valueLen];
 			in.readFully(valueBytes);
 			value = new String(valueBytes);
+
 		}
 
 		@Override
 		public void write(DataOutput out) throws IOException {
 			// TODO Auto-generated method stub
+      String outStr = key + "\t" + value;
+      out.writeInt(outStr.length());
+      out.writeChars(key + "\t" + value);
+
 			byte[] keyBytes = key.getBytes();
 			out.writeInt(keyBytes.length);
 			out.write(keyBytes);
@@ -59,25 +80,27 @@ public class MREntityCrossSimilarity {
 			byte[] valueBytes = value.getBytes();
 			out.writeInt(valueBytes.length);
 			out.write(valueBytes);
+
 		}
+    */
 
 		@Override
 		public int compareTo(MyText rhs) {
 			// TODO Auto-generated method stub
-			int compareRes = this.key.compareTo(rhs.key);
+			int compareRes = this.key1.compareTo(rhs.key1);
 			if (compareRes == 0) {
-				return this.value.compareTo(rhs.value);
+				return this.key2.compareTo(rhs.key2);
 			}
 			return compareRes;
 		}
-		
-		public String getValue() {
-			return value;
-		}
+
+    public String getKey1() {
+      return key1;
+    }
 	}
 
 	private static class MyMapper extends MapReduceBase implements
-			Mapper<LongWritable, Text, Text, MyText> {
+			Mapper<LongWritable, Text, MyText, Text> {
 		// We should know total records to do the cross similarity.
 		int totalRecords = 0;
 
@@ -88,27 +111,27 @@ public class MREntityCrossSimilarity {
 
 		@Override
 		public void map(LongWritable key, Text value,
-				OutputCollector<Text, MyText> output, Reporter reporter)
+				OutputCollector<MyText, Text> output, Reporter reporter)
 				throws IOException {
 			String[] parts = value.toString().split("\t");
 			Integer recordNumber = Integer.parseInt(parts[0]);
 			String newKey = String.format("%010d", recordNumber);
-			output.collect(new Text(newKey), new MyText("0", parts[1]));
+			output.collect(new MyText(newKey, "0"), new Text(parts[1]));
 			System.out.println(newKey + " => " + "0\t" + parts[1]);
 			for (int i = 1; i <= totalRecords; ++i) {
 				newKey = String.format("%010d", i);
-				output.collect(new Text(newKey), new MyText("1", parts[1]));
+				output.collect(new MyText(newKey, "1"), new Text(parts[1]));
 				System.out.println(newKey + " => " + "1\t" + parts[1]);
 			}
 		}
 	}
 
-	private static class MyPartitioner implements Partitioner<Text, MyText>,
+	private static class MyPartitioner implements Partitioner<MyText, Text>,
 			JobConfigurable {
 
 		@Override
-		public int getPartition(Text key, MyText value, int numReduceTasks) {
-			Integer partition = Integer.parseInt(key.toString())
+		public int getPartition(MyText key, Text value, int numReduceTasks) {
+			Integer partition = Integer.parseInt(key.getKey1().toString())
 					% numReduceTasks;
 			return partition;
 		}
@@ -128,7 +151,7 @@ public class MREntityCrossSimilarity {
 			// TODO Auto-generated method stub
 			String firstValue = "";
 			while (values.hasNext()) {
-				String currentValue = values.next().getValue();
+				String currentValue = values.next().toString();
 				System.out.println(key + " == " + currentValue);
 				if (firstValue == "") {
 					firstValue = currentValue;
@@ -142,6 +165,31 @@ public class MREntityCrossSimilarity {
 			}
 		}
 	}
+
+  private static final class SortReducerByValuesValueGroupingComparator implements RawComparator {
+    public int compare(byte[] text1, int start1, int length1, byte[] text2, int start2, int length2) {
+      // look at first character of each text byte array
+      String text1Str = new String(text1, start1, length1);
+      String text2Str = new String(text2, start2, length2);
+      
+      String key1 = text1Str.split("\t")[0];
+      String key2 = text2Str.split("\t")[0];
+    
+      return key1.compareTo(key2);
+    }
+
+    /*
+    public int compare(Text o1, Text o2) {
+      String text1Str = o1.toString();
+      String text2Str = o2.toString();
+
+      String key1 = text1Str.split("\t")[0];
+      String key2 = text2Str.split("\t")[0];
+    
+      return key1.compareTo(key2);
+    }
+    */
+  }
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws IOException {
@@ -167,9 +215,10 @@ public class MREntityCrossSimilarity {
 		conf.setMapperClass(MyMapper.class);
 		conf.setPartitionerClass(MyPartitioner.class);
 		conf.setReducerClass(MyReducer.class);
+    conf.setOutputValueGroupingComparator(SortReducerByValuesValueGroupingComparator.class);
 
-		conf.setMapOutputKeyClass(Text.class);
-		conf.setMapOutputValueClass(MyText.class);
+		conf.setMapOutputKeyClass(MyText.class);
+		conf.setMapOutputValueClass(Text.class);
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(Text.class);
 
