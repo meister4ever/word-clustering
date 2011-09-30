@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.hadoop.fs.Path;
@@ -26,6 +27,39 @@ import org.apache.hadoop.mapred.Reporter;
 
 @SuppressWarnings("deprecation")
 public class MREntityCrossSimilarity {
+	
+	private static class DotProductData {
+		public String firstValue;
+		public String secondValue;
+		public Double dotProduct;
+	}
+	
+	public static DotProductData ComputeDotProduct(String first, String second) {
+		DotProductData dotProduct = new DotProductData();
+		String[] parts = first.split(":");
+		dotProduct.firstValue = parts[0];
+		String[] firstParts = parts[1].split(",");
+		
+		
+		parts = second.split(":");
+		dotProduct.secondValue = parts[0];
+		String[] secondParts = parts[1].split(",");
+		dotProduct.dotProduct = 0.0;
+		
+		HashMap<String, Double> categoryScores = new HashMap<String, Double>();
+		for (int i = 0; i < firstParts.length; ++i) {
+			parts = firstParts[i].split("=");
+			categoryScores.put(parts[0], Double.parseDouble(parts[1]));
+		}
+		for (int i = 0; i < secondParts.length; ++i) {
+			parts = secondParts[i].split("=");
+			Double prevValue = categoryScores.get(parts[0]);
+			if (prevValue != null) {
+				dotProduct.dotProduct += prevValue * Double.parseDouble(parts[1]);
+			}
+		}
+		return dotProduct;
+	}
 
 	private static class MyText implements WritableComparable<MyText> {
 		private String key1;
@@ -41,24 +75,24 @@ public class MREntityCrossSimilarity {
 			this.key2 = key2;
 		}
 
-    @Override
-    public void readFields(DataInput in) throws IOException {
-      int strLen = in.readInt();
-      String inStr = "";
-      for (int i = 0; i < strLen; ++i) {
-        inStr += in.readChar();
-      } 
-      String[] parts = inStr.split("\t"); 
-      key1 = parts[0];
-      key2 = parts[1];
-    }
-		  
-    @Override 
-    public void write(DataOutput out) throws IOException {
-      String outStr = key1 + "\t" + key2;
-      out.writeInt(outStr.length());
-      out.writeChars(key1 + "\t" + key2);
-    }
+		@Override
+		public void readFields(DataInput in) throws IOException {
+			int strLen = in.readInt();
+			String inStr = "";
+			for (int i = 0; i < strLen; ++i) {
+				inStr += in.readChar();
+			}
+			String[] parts = inStr.split("\t");
+			key1 = parts[0];
+			key2 = parts[1];
+		}
+
+		@Override
+		public void write(DataOutput out) throws IOException {
+			String outStr = key1 + "\t" + key2;
+			out.writeInt(outStr.length());
+			out.writeChars(key1 + "\t" + key2);
+		}
 
 		@Override
 		public int compareTo(MyText rhs) {
@@ -128,9 +162,10 @@ public class MREntityCrossSimilarity {
 					firstValue = currentValue;
 				}
 				if (currentValue.compareTo(firstValue) != 0) {
-          DotProductData data = ComputeDotProduct(firstValue, currentValue);
-          output.collect(new Text(data.firstValue + ", " + data.secondValue),
-              new Text(data.dotProduct));
+					DotProductData data = ComputeDotProduct(firstValue,
+							currentValue);
+					output.collect(new Text(data.firstValue + ", "
+							+ data.secondValue), new Text(data.dotProduct.toString()));
 				}
 			}
 		}
@@ -141,38 +176,38 @@ public class MREntityCrossSimilarity {
 		public int compare(byte[] text1, int start1, int length1, byte[] text2,
 				int start2, int length2) {
 			// look at first character of each text byte array
-      // Deserialize the binary stream and get the MyText object from them.
-      // Then add the comparison to group by the primary key (it is already sorted
-      // on primary and secondary).
-      MyText myText1 = null, myText2 = null;
-      try {
-        ObjectInputStream in = new ObjectInputStream(
-          new ByteArrayInputStream(text1, start1, length1));
-        myText1 = (MyText)in.readObject();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+			// Deserialize the binary stream and get the MyText object from
+			// them.
+			// Then add the comparison to group by the primary key (it is
+			// already sorted
+			// on primary and secondary).
+			MyText myText1 = null, myText2 = null;
+			try {
+				ObjectInputStream in = new ObjectInputStream(
+						new ByteArrayInputStream(text1, start1, length1));
+				myText1 = (MyText) in.readObject();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-      try {
-        ObjectInputStream in = new ObjectInputStream(
-            new ByteArrayInputStream(text2, start2, length2));
-        myText2 = (MyText)in.readObject();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+			try {
+				ObjectInputStream in = new ObjectInputStream(
+						new ByteArrayInputStream(text2, start2, length2));
+				myText2 = (MyText) in.readObject();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			return myText1.key1.compareTo(myText2.key1);
 		}
 
 		@Override
 		public int compare(MyText o1, MyText o2) {
-		  int compareRes = o1.key1.compareTo(o2.key1);
-      /*
-      if (compareRes == 0) {
-        return o1.key2.compareTo(o2.key2);
-      }
-      */
-      return compareRes;
+			int compareRes = o1.key1.compareTo(o2.key1);
+			/*
+			 * if (compareRes == 0) { return o1.key2.compareTo(o2.key2); }
+			 */
+			return compareRes;
 		}
 	}
 
@@ -207,7 +242,6 @@ public class MREntityCrossSimilarity {
 		conf.setMapOutputValueClass(Text.class);
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(Text.class);
-
 
 		FileInputFormat.setInputPaths(conf, new Path(inputPath));
 		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
