@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -27,35 +29,54 @@ import org.apache.hadoop.mapred.Reporter;
 
 @SuppressWarnings("deprecation")
 public class MREntityCrossSimilarity {
-	
+
 	private static class DotProductData {
 		public String firstValue;
 		public String secondValue;
 		public Double dotProduct;
-    public String orderedCategories;
+		public Set<CategoryProduct> orderedCategories;
 	}
 
-  private static class CategoryProduct implements Comparable {
-    public String category;
-    public Double weight;
+	private static class CategoryProduct implements Comparable<CategoryProduct> {
+		public String category;
+		public Double weight;
 
-    // CompareTo
-  }
-	
+		CategoryProduct(String category, Double weight) {
+			this.category = category;
+			this.weight = weight;
+		}
+		
+		@Override
+		public String toString() {
+			return category + ":" + weight;
+		}
+		
+		// CompareTo
+		@Override
+		public int compareTo(CategoryProduct other) {
+			if (weight > other.weight) {
+				return 1;
+			} else if (weight < other.weight) {
+				return -1;
+			} else {
+				return category.compareTo(other.category);
+			}
+		}
+	}
+
 	public static DotProductData ComputeDotProduct(String first, String second) {
-    Set<CategoryProduct> categorySet = new TreeSet<CategoryProduct>();
-    System.out.println(first + " : " + second);
+		Set<CategoryProduct> categorySet = new TreeSet<CategoryProduct>();
+		System.out.println(first + " : " + second);
 		DotProductData dotProduct = new DotProductData();
 		String[] parts = first.split("\t");
 		dotProduct.firstValue = parts[0];
 		String[] firstParts = parts[1].split(",");
-		
-		
+
 		parts = second.split("\t");
 		dotProduct.secondValue = parts[0];
 		String[] secondParts = parts[1].split(",");
 		dotProduct.dotProduct = 0.0;
-		
+
 		HashMap<String, Double> categoryScores = new HashMap<String, Double>();
 		for (int i = 0; i < firstParts.length; ++i) {
 			parts = firstParts[i].split(":");
@@ -65,11 +86,12 @@ public class MREntityCrossSimilarity {
 			parts = secondParts[i].split(":");
 			Double prevValue = categoryScores.get(parts[0]);
 			if (prevValue != null) {
-        product = prevValue * Double.parseDouble(parts[1]);
-        categorySet.add(new CategoryProduct(parts[0], product));
+				Double product = prevValue * Double.parseDouble(parts[1]);
+				categorySet.add(new CategoryProduct(parts[0], product));
 				dotProduct.dotProduct += product;
 			}
 		}
+		dotProduct.orderedCategories = categorySet;
 		return dotProduct;
 	}
 
@@ -176,8 +198,19 @@ public class MREntityCrossSimilarity {
 				if (currentValue.compareTo(firstValue) != 0) {
 					DotProductData data = ComputeDotProduct(firstValue,
 							currentValue);
+					String categoryString = "";
+					boolean first = true;
+					for (CategoryProduct cat : data.orderedCategories) {
+						if (!first) {
+							categoryString += "," + cat;
+							first = false;
+						} else {
+							categoryString += cat;
+						}
+					}
 					output.collect(new Text(data.firstValue + ", "
-							+ data.secondValue), new Text(data.dotProduct.toString()));
+							+ data.secondValue), new Text(data.dotProduct
+							.toString() + "\t" + categoryString));
 				}
 			}
 		}
@@ -229,7 +262,7 @@ public class MREntityCrossSimilarity {
 		String inputPath = args[0];
 		String outputPath = args[1];
 		Integer totalRecords = Integer.parseInt(args[2]);
-    Integer numReducers = Integer.parseInt(args[3]);
+		Integer numReducers = Integer.parseInt(args[3]);
 
 		// int reduceTasks = Integer.parseInt(args[2]);
 
