@@ -1,7 +1,7 @@
 import re
 import sys
 
-MIN_SYNS = 10
+MIN_SYNS = 2
 
 
 # Utility function to add a key, value to a dictionary

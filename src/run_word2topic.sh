@@ -1,5 +1,5 @@
 make
-WORKING_DIR="/scratch2/rohith/entity_similarity/"
+WORKING_DIR="/scratch/rohith/entity_similarity/"
 
 # Word to topic conversion.
 if [ ! -e ${WORKING_DIR}/topic_repr/mr.done ]; then
@@ -32,5 +32,21 @@ if [ ! -e ${WORKING_DIR}/topic_repr_normalized/mr.done ]; then
   rm -rf ${WORKING_DIR}/topic_repr_normalized/part-*
   hadoop fs -get /user/rohith/entity_similarity/topic_repr_normalized ${WORKING_DIR}/topic_repr_normalized
   cat ${WORKING_DIR}/topic_repr_normalized/part-* > ${WORKING_DIR}/topic_repr_normalized/normalized_topic_entity_vector.txt
+  cat ${WORKING_DIR}/topic_repr_normalized/normalized_topic_entity_vector.txt | \
+  awk 'BEGIN{ln=1;}{printf("%d%s\n",ln,$0);ln++;}' > \
+  ${WORKING_DIR}/topic_repr_normalized/normalized_topic_entity_vector_with_ln.txt
+  hadoop fs -rm /user/rohith/entity_similarity/topic_repr_normalized/normalized_topic_entity_vector_with_ln.txt
+  hadoop fs -copyFromLocal ${WORKING_DIR}/topic_repr_normalized/normalized_topic_entity_vector_with_ln.txt \
+  /user/rohith/entity_similarity/topic_repr_normalized/
   touch ${WORKING_DIR}/topic_repr_normalized/mr.done
+fi
+
+if [ ! -e ${WORKING_DIR}/entity_cross_similarity/mr.done ]; then
+  echo "Running Cross similarity.."
+  hadoop fs -rmr /user/rohith/entity_similarity/entity_cross_similarity
+  NUM_ENTITIES=`cat ${WORKING_DIR}/topic_repr_normalized/normalized_topic_entity_vector_with_ln.txt | wc -l`
+  hadoop jar WordCluster.jar MREntityCrossSimilarity /user/rohith/entity_similarity/topic_repr_normalized/normalized_topic_entity_vector_with_ln_* /user/rohith/entity_similarity/entity_cross_similarity $NUM_ENTITIES 35
+  hadoop fs -get /user/rohith/entity_similarity/entity_cross_similarity ${WORKING_DIR}/entity_cross_similarity
+  cat ${WORKING_DIR}/entity_cross_similarity/part-* > ${WORKING_DIR}/entity_cross_similarity/entity_cross_similarity.txt
+  touch ${WORKING_DIR}/entity_cross_similarity/mr.done
 fi

@@ -32,30 +32,42 @@ public class MREntityCrossSimilarity {
 		public String firstValue;
 		public String secondValue;
 		public Double dotProduct;
+    public String orderedCategories;
 	}
+
+  private static class CategoryProduct implements Comparable {
+    public String category;
+    public Double weight;
+
+    // CompareTo
+  }
 	
 	public static DotProductData ComputeDotProduct(String first, String second) {
+    Set<CategoryProduct> categorySet = new TreeSet<CategoryProduct>();
+    System.out.println(first + " : " + second);
 		DotProductData dotProduct = new DotProductData();
-		String[] parts = first.split(":");
+		String[] parts = first.split("\t");
 		dotProduct.firstValue = parts[0];
 		String[] firstParts = parts[1].split(",");
 		
 		
-		parts = second.split(":");
+		parts = second.split("\t");
 		dotProduct.secondValue = parts[0];
 		String[] secondParts = parts[1].split(",");
 		dotProduct.dotProduct = 0.0;
 		
 		HashMap<String, Double> categoryScores = new HashMap<String, Double>();
 		for (int i = 0; i < firstParts.length; ++i) {
-			parts = firstParts[i].split("=");
+			parts = firstParts[i].split(":");
 			categoryScores.put(parts[0], Double.parseDouble(parts[1]));
 		}
 		for (int i = 0; i < secondParts.length; ++i) {
-			parts = secondParts[i].split("=");
+			parts = secondParts[i].split(":");
 			Double prevValue = categoryScores.get(parts[0]);
 			if (prevValue != null) {
-				dotProduct.dotProduct += prevValue * Double.parseDouble(parts[1]);
+        product = prevValue * Double.parseDouble(parts[1]);
+        categorySet.add(new CategoryProduct(parts[0], product));
+				dotProduct.dotProduct += product;
 			}
 		}
 		return dotProduct;
@@ -122,13 +134,13 @@ public class MREntityCrossSimilarity {
 		public void map(LongWritable key, Text value,
 				OutputCollector<MyText, Text> output, Reporter reporter)
 				throws IOException {
-			String[] parts = value.toString().split("\t");
+			String[] parts = value.toString().split("");
 			Integer recordNumber = Integer.parseInt(parts[0]);
 			String newKey = String.format("%010d", recordNumber);
-			output.collect(new MyText(newKey, "0"), value);
+			output.collect(new MyText(newKey, "0"), new Text(parts[1]));
 			for (int i = 1; i <= totalRecords; ++i) {
 				newKey = String.format("%010d", i);
-				output.collect(new MyText(newKey, "1"), value);
+				output.collect(new MyText(newKey, "1"), new Text(parts[1]));
 			}
 		}
 	}
@@ -217,13 +229,14 @@ public class MREntityCrossSimilarity {
 		String inputPath = args[0];
 		String outputPath = args[1];
 		Integer totalRecords = Integer.parseInt(args[2]);
+    Integer numReducers = Integer.parseInt(args[3]);
 
 		// int reduceTasks = Integer.parseInt(args[2]);
 
 		JobConf conf = new JobConf(MRWordTopicConverter.class);
 
-		conf.setJobName("MRWordTopicConverter");
-		conf.setNumReduceTasks(2);
+		conf.setJobName("MREntityCrossSimilarity");
+		conf.setNumReduceTasks(numReducers);
 		conf.setInt("totalRecords", totalRecords);
 
 		conf.set("mapred.task.timeout", "12000000");

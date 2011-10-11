@@ -14,7 +14,7 @@ class Dumper:
     create_query = 'create table entity_vectors ('
     create_query += 'entity_name text'
     for column in columns:
-      create_query += ', %s real' % column
+      create_query += ', "%s" real' % column
     create_query += ')'
     #print 'Create query: %s' % create_query
     self.cursor.execute(create_query)
@@ -23,6 +23,7 @@ class Dumper:
   def InsertEntityVectors(self, filename):
     file = open(filename, 'r')
     table_created = 0
+    record_cnt = 0
     for line in file:
       topic_dict = {}
       entity, entity_vector = line.strip().split('\t')
@@ -35,6 +36,7 @@ class Dumper:
       sorted_topics.sort()
       if table_created == 0:
         self.CreateEntityVectorsTable(sorted_topics)
+        table_created = 1
   
       insert_query = 'insert into entity_vectors values("%s"' % entity
       for topic in sorted_topics:
@@ -44,12 +46,14 @@ class Dumper:
       #print 'Insert query: %s' % insert_query
       self.cursor.execute(insert_query)
       self.connection.commit()
+      record_cnt += 1
+      #print record_cnt
 
   def DumpTopKEntitiesForTopics(self, num_entities):
     topic_number = 1
     for topic in self.topics:
       self.cursor.execute('''select entity_name from entity_vectors
-        order by %s desc limit %d''' % (topic, num_entities))
+        order by "%s" desc limit %d''' % (topic, num_entities))
       print '%d] Topic %s' % (topic_number, topic)
       print '\tTop:'
       entity_num = 1
@@ -59,7 +63,7 @@ class Dumper:
       print '\n'
 
       self.cursor.execute('''select entity_name from entity_vectors
-        order by %s asc limit %d''' % (topic, num_entities))
+        order by "%s" asc limit %d''' % (topic, num_entities))
       print '\tBottom:'
       entity_num = 1
       for row in self.cursor.fetchall():
