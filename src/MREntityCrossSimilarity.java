@@ -54,9 +54,9 @@ public class MREntityCrossSimilarity {
 		// CompareTo
 		@Override
 		public int compareTo(CategoryProduct other) {
-			if (weight > other.weight) {
+			if (weight < other.weight) {
 				return 1;
-			} else if (weight < other.weight) {
+			} else if (weight > other.weight) {
 				return -1;
 			} else {
 				return category.compareTo(other.category);
@@ -203,9 +203,9 @@ public class MREntityCrossSimilarity {
 					for (CategoryProduct cat : data.orderedCategories) {
 						if (!first) {
 							categoryString += "," + cat;
-							first = false;
 						} else {
 							categoryString += cat;
+							first = false;
 						}
 					}
 					output.collect(new Text(data.firstValue + ", "

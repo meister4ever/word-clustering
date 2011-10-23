@@ -25,9 +25,9 @@ public class MRWordTopicConverter {
 
 		@Override
 		public void configure(JobConf job) {
-			StopwordUtil stopwordUtil = new StopwordUtil("/disk01/rohith/hadoop/shared/entity_similarity/stopWords.txt");
-			WordIdMap wordIdMap = new WordIdMap("/disk01/rohith/hadoop/shared/entity_similarity/allWordsStemmed.txt", stopwordUtil);
-			TopicWordMap topicWordMap = new TopicWordMap("/home/rohith/word-clustering/data/seedWordsThesaurus.dat", wordIdMap);
+			StopwordUtil stopwordUtil = new StopwordUtil("/home/rohith/word-clustering/data/stopWords.txt");
+			WordIdMap wordIdMap = new WordIdMap("/home/rohith/word-clustering/data/top10KWords.stemmed.txt", stopwordUtil);
+			TopicWordMap topicWordMap = new TopicWordMap("/home/rohith/word-clustering/data/seedWords.txt", wordIdMap);
 			wordTopicConverter = new WordTopicConverter(wordIdMap, topicWordMap);
 		}
 
