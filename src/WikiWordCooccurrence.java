@@ -29,16 +29,18 @@ public class WikiWordCooccurrence {
   private static class MyMapper extends MapReduceBase implements
       Mapper<LongWritable, WikipediaPage, Text, IntWritable> {
     private int window = 3;
+    private int samplePercentage = 3;
     private WordFrequencyUtil wfUtil;
     private IntWritable one = new IntWritable(1);
 
     protected static enum MyCounter {
-      INPUT_WORDS, INPUT_ARTICLES
+      INPUT_WORDS, INPUT_ARTICLES, SAMPLED_ARTICLES
     };
 
     @Override
     public void configure(JobConf job) {
       window = job.getInt("window", 3);
+      samplePercentage = job.getInt("samplePercentage", 25);
       String topWordsFile = job.get("topWords");
       wfUtil = new WordFrequencyUtil(topWordsFile, job);
     }
@@ -50,14 +52,22 @@ public class WikiWordCooccurrence {
       if (!page.isArticle()) {
         return;
       }
+
+      reporter.incrCounter(MyCounter.INPUT_ARTICLES, 1);
+
+      Double randomNumber = Math.random() * 100;
+      if (randomNumber.intValue() > samplePercentage) {
+        return;
+      }
+
       String text = null;
       try {
         text = page.getContent();
       } catch (Exception e) {
         return;
-      }
+      } 
 
-      reporter.incrCounter(MyCounter.INPUT_ARTICLES, 1);
+      reporter.incrCounter(MyCounter.SAMPLED_ARTICLES, 1);
 
       String[] sents = text.split("\\.|\\?");
       for (String sent : sents) {
@@ -69,7 +79,7 @@ public class WikiWordCooccurrence {
           if (!wfUtil.isPresent(term)) {
             continue;
           }
-          //for (int j = i - window; j < i + window + 1; j++) {
+
           for (int j = 0; j < terms.length; j++) {
             if (j == i || j < 0)
               continue;
@@ -86,20 +96,26 @@ public class WikiWordCooccurrence {
               continue;
             }
 
-            String outputKey = storedWordi + ":" + storedWordj;
+            String outputKey = storedWordi + "" + storedWordj;
+            if (storedWordi.compareTo(storedWordj) > 0) {
+              outputKey = storedWordj + "" + storedWordi;
+            }
+
             try {
               output.collect(new Text(outputKey), one);
             } catch (Exception e) {
               e.printStackTrace();
             }
           }
+
+          output.collect(new Text(storedWordi), one);
         }
       }
     }
   }
 
   public static class MyReducer extends MapReduceBase implements
-      Reducer<Text, IntWritable, Text, DoubleWritable> {
+      Reducer<Text, IntWritable, Text, LongWritable> {
 
     private int window = 6;
     private WordFrequencyUtil wfUtil;
@@ -113,13 +129,16 @@ public class WikiWordCooccurrence {
 
     @Override
     public void reduce(Text key, Iterator<IntWritable> values,
-        OutputCollector<Text, DoubleWritable> output, Reporter reporter)
+        OutputCollector<Text, LongWritable> output, Reporter reporter)
         throws IOException {
-      int count = 0;
+      long count = 0;
       while (values.hasNext()) {
         count += values.next().get();
       }
 
+      output.collect(key, new LongWritable(count));
+
+      /*
       String[] parts = key.toString().split(":");
       Integer freqi = wfUtil.getFrequency(parts[0]);
       Integer freqj = wfUtil.getFrequency(parts[1]);
@@ -131,6 +150,7 @@ public class WikiWordCooccurrence {
           / (2 * (double)window * (double)freqi * (double)freqj);
 
       output.collect(key, new DoubleWritable(normalizedScore));
+      */
     }
   }
 
@@ -142,7 +162,7 @@ public class WikiWordCooccurrence {
 
   private static int printUsage() {
     System.out
-        .println("usage: [input-path] [output-path] [window] [num-reducers] [stopwords] [pos-tagger-model]");
+        .println("usage: [input-path] [output-path] [window] [num-reducers] [stopwords] [sample-percentage] ");
     return -1;
   }
 
@@ -150,7 +170,7 @@ public class WikiWordCooccurrence {
    * Runs this tool.
    */
   public static void main(String[] args) throws Exception {
-    if (args.length != 5) {
+    if (args.length != 6) {
       printUsage();
       return;
     }
@@ -160,6 +180,7 @@ public class WikiWordCooccurrence {
 
     int window = Integer.parseInt(args[2]);
     int reduceTasks = Integer.parseInt(args[3]);
+    int samplePercentage = Integer.parseInt(args[5]);
 
     JobConf conf = new JobConf(WikiWordCooccurrence.class);
     System.out.println(" - input path: " + inputPath);
@@ -167,14 +188,15 @@ public class WikiWordCooccurrence {
     System.out.println(" - window: " + window);
     System.out.println(" - number of reducers: " + reduceTasks);
     System.out.println(" - wordFrequencies: " + args[4]);
+    System.out.println(" - samplePercentage: " + args[5]);
 
     conf.set("topWords", args[4]);
+    conf.setInt("samplePercentage", samplePercentage);
     conf.setJobName("Cooccurence");
-    conf.setNumMapTasks(48);
     conf.setNumReduceTasks(reduceTasks);
 
-    conf.set("mapred.task.timeout", "12000000");
-    conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
+    //conf.set("mapred.task.timeout", "12000000");
+    //conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
 
     conf.setInputFormat(WikipediaPageInputFormat.class);
     conf.setOutputFormat(TextOutputFormat.class);
@@ -184,7 +206,7 @@ public class WikiWordCooccurrence {
     conf.setMapOutputKeyClass(Text.class);
     conf.setMapOutputValueClass(IntWritable.class);
     conf.setOutputKeyClass(Text.class);
-    conf.setOutputValueClass(DoubleWritable.class);
+    conf.setOutputValueClass(LongWritable.class);
 
     FileInputFormat.setInputPaths(conf, new Path(inputPath));
     FileOutputFormat.setOutputPath(conf, new Path(outputPath));
