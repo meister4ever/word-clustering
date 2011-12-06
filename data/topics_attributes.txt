@@ -1,6 +1,25 @@
-accessibility
-accidents
-accuracy
+
+Goals:
+
+(1) Each word should describe a single trait you might use as a description (A and B are similar in trait T)
+
+(2) The goal word should be the best choice, perhaps with synonyms listed as the first words in the feature set
+
+(3) The categories often should be paired by complementary traits  (courage, cowardice) 
+
+(4) certain categories which are uninteresting shouldn't be there
+
+========================
+
+
+approachable: accessibility
+hostility:
+
+error-prone:  clumsiness
+perfectionist: 
+
+accuracy: precision
+
 activeness
 adventurousness
 affirmativeness
@@ -14,7 +33,6 @@ anger
 animalism
 animality
 aplomb
-approachability
 aspersion
 ataraxia
 attack

@@ -55,7 +55,7 @@ language:pronunciation,tongue,language,lingual,linguistic
 leadership:leading,lead,leader,leadership,power,head,abled
 legal:justice,lawyer,legal,law,statute,code,civil law,criminal law
 lethargic:lethargic,lassitude,sluggishness,inanition,lethargy,slackness,languor,sluggishness,phlegm,flatness
-light:bright,light,luminosity,brightness,luminance,luminousness,lightness,sparkle,twinkle,spark,illume,illumine,illuminate
+light:bright,light,luminosity,brightness,luminance,luminousness,lightness,sparkle,twinkle,spark,illume,illumine,illuminate,glowing,glow
 literature:books,literature,writing,poem,literary,language
 masculine:male,boy,boyish,manly,manlike,manful,butch,macho,virile,mannish
 medicine:doctor,drugs,medicine,physician,quack,vet,nurse,hospital,illness,disease,diagnose
@@ -65,7 +65,7 @@ naive:simple,credulous,uninformed,unworldly,childlike,fleeceable,gullible,innoce
 narrow:narrow-minded,close-minded,closed-minded,dogmatic,dogmatical,illiberal,intolerant,opinionated,opinionative,self-opinionated,petty,small-minded,slender,thin,constricting,constrictive,narrowing,limited
 nationalism:country,nationalism
 negative:destructive,pessimistic,unsupportive,antagonistic,perverse,counter,disinclined,unfavorable,unfavourable,bad,punishable
-negro:black,black person,blackamoor,negro,negroid
+negro:black,black person,blackamoor,negro,negroid,african-american
 nobility:nobility,royal,nobleness,magnanimousness,grandeur,aristocracy,regal
 optimistic:affirmative,optimistic,positive,hopeful
 passive:inactive,peaceful,resistless,supine,unresisting,dull,nonviolent,calm
