@@ -99,7 +99,7 @@ young:younger,youth,born,teenage,youth,youthful,vernal
 adventurous:adventurous,rebellious,bold,brave,courageous,audacious,daring,venturesome,venturous
 atheist:atheist,atheistic,atheistical
 automotive:automotive,car,auto,automobile,machine,motorcar
-awkward:,awkward,clumsy,bunglesome,clumsy,ungainly,cumbersome,inapt,inept,inelegant
+awkward:awkward,clumsy,bunglesome,clumsy,ungainly,cumbersome,inapt,inept,inelegant
 backward:backward,nostalgic,retrospective,regressive,retracted,reverse
 cautious:cautious,conservative,careful,unadventurous,overcautious,cagey,cagy,chary,avoidable
 clean:clean,sterile,immaculate,speckless,spotless,pristine,unsullied,tidy
