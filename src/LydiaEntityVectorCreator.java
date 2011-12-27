@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.Path;
@@ -27,7 +29,7 @@ import edu.umd.cloud9.collection.wikipedia.WikipediaPage;
 import edu.umd.cloud9.collection.wikipedia.WikipediaPageInputFormat;
 
 @SuppressWarnings("deprecation")
-public class WikiWordCooccurrence {
+public class LydiaEntityVectorCreator {
 
   private static final Long NUM_WORDS = (long) 1594793586;
 
@@ -36,10 +38,11 @@ public class WikiWordCooccurrence {
   };
 
   private static class MyMapper extends MapReduceBase implements
-      Mapper<LongWritable, WikipediaPage, Text, LongWritable> {
+      Mapper<LongWritable, Text, Text, LongWritable> {
     private int window = 3;
     private int samplePercentage = 10;
     private WordFrequencyUtil wfUtil;
+    private List<String> entityList;
     private LongWritable one = new LongWritable(1);
 
     @Override
@@ -47,82 +50,54 @@ public class WikiWordCooccurrence {
       window = job.getInt("window", 3);
       samplePercentage = job.getInt("samplePercentage", 25);
       String topWordsFile = job.get("topWords");
+      String entityFile = job.get("entityFile");
       wfUtil = new WordFrequencyUtil(topWordsFile, job);
+      entityList = new ArrayList<String>();
+      String entityListStr = HdfsFileUtil.ReadFileContent(entityFile, job);
+      for (String entity : entityListStr.split("\n")) {
+        entityList.add(entity);
+      }
     }
 
     @Override
-    public void map(LongWritable key, WikipediaPage page,
+    public void map(LongWritable key, Text newsText,
         OutputCollector<Text, LongWritable> output, Reporter reporter)
         throws IOException {
-      if (!page.isArticle()) {
-        return;
-      }
-
-      reporter.incrCounter(MyCounter.INPUT_ARTICLES, 1);
 
       Double randomNumber = Math.random() * 100;
       if (randomNumber.intValue() > samplePercentage) {
         return;
       }
 
-      String text = null;
-      try {
-        text = page.getContent();
-      } catch (Exception e) {
-        return;
-      } 
-
-      reporter.incrCounter(MyCounter.SAMPLED_ARTICLES, 1);
+      String text = newsText.toString();
 
       String[] sents = text.split("\\.|\\?");
       reporter.incrCounter(MyCounter.NUM_SENTENCES, sents.length);
       for (String sent : sents) {
+        List<String> sentenceEntities = new ArrayList<String>();
+        sent = sent.toLowerCase();
+        for (String entity : entityList) {
+          if (sent.indexOf(entity) != -1) {
+            sentenceEntities.add(entity);
+            sent = sent.replaceAll(entity, "");
+          }
+        }
         String[] terms = sent.split("\\s+");
         for (int i = 0; i < terms.length; i++) {
           String term = terms[i];
-          //String storedWordi = StringUtil.clean(term);
-          //if (storedWordi.length() == 0 || storedWordi.matches(".*[^a-zA-Z0-9 '].*")) {
-          //  continue;
-          //}
-          String storedWordi = wfUtil.getStoredString(terms[i]);
-          if (!wfUtil.isPresent(term)) {
+          String storedWordi = StringUtil.clean(term);
+          if (!wfUtil.isPresent(storedWordi)) {
             continue;
           }
           reporter.incrCounter(MyCounter.INPUT_WORDS, 1);
 
-          for (int j = 0; j < terms.length; j++) {
-            if (j == i || j < 0)
-              continue;
-
-            if (j >= terms.length)
-              break;
-
-            if (!wfUtil.isPresent(terms[j])) {
-              continue;
-            }
-
-            String storedWordj = wfUtil.getStoredString(terms[j]);
-            //String storedWordj = StringUtil.clean(terms[j]);
-            //if (storedWordj.length() == 0 || storedWordj.matches(".*[^a-zA-Z0-9 '].*")) {
-            //  continue;
-            //}
-            if (storedWordi.compareTo(storedWordj) == 0) {
-              continue;
-            }
-
-            String outputKey = storedWordi + "" + storedWordj;
-            if (storedWordi.compareTo(storedWordj) > 0) {
-              outputKey = storedWordj + "" + storedWordi;
-            }
-
+          for (String entity : sentenceEntities) {
             try {
-              output.collect(new Text(outputKey), one);
+              output.collect(new Text(entity + "" + storedWordi), one);
             } catch (Exception e) {
               e.printStackTrace();
             }
           }
-
-          output.collect(new Text(storedWordi), one);
         }
       }
     }
@@ -145,33 +120,21 @@ public class WikiWordCooccurrence {
         count += values.next().get();
       }
 
-      output.collect(key, new LongWritable(count));
-
-      /*
-      String[] parts = key.toString().split(":");
-      Integer freqi = wfUtil.getFrequency(parts[0]);
-      Integer freqj = wfUtil.getFrequency(parts[1]);
-      if (freqi == null || freqj == null) {
-        return;
+      if (count >= 100) {
+        output.collect(key, new LongWritable(count));
       }
-
-      double normalizedScore =  ((double)(count + 1) * NUM_WORDS)
-          / (2 * (double)window * (double)freqi * (double)freqj);
-
-      output.collect(key, new DoubleWritable(normalizedScore));
-      */
     }
   }
 
   /**
    * Creates an instance of this tool.
    */
-  public WikiWordCooccurrence() {
+  public LydiaEntityVectorCreator() {
   }
 
   private static int printUsage() {
     System.out
-        .println("usage: [input-path] [output-path] [window] [num-reducers] [stopwords] [sample-percentage] [counter-output-file]");
+        .println("usage: [input-path] [output-path] [window] [num-reducers] [stopwords] [sample-percentage] [entity-file]");
     return -1;
   }
 
@@ -190,17 +153,18 @@ public class WikiWordCooccurrence {
     int window = Integer.parseInt(args[2]);
     int reduceTasks = Integer.parseInt(args[3]);
     int samplePercentage = Integer.parseInt(args[5]);
-    String counterFile = args[6];
 
-    JobConf conf = new JobConf(WikiWordCooccurrence.class);
+    JobConf conf = new JobConf(LydiaEntityVectorCreator.class);
     System.out.println(" - input path: " + inputPath);
     System.out.println(" - output path: " + outputPath);
     System.out.println(" - window: " + window);
     System.out.println(" - number of reducers: " + reduceTasks);
     System.out.println(" - wordFrequencies: " + args[4]);
     System.out.println(" - samplePercentage: " + args[5]);
+    System.out.println(" - entityList: " + args[6]);
 
     conf.set("topWords", args[4]);
+    conf.set("entityFile", args[6]);
     conf.setInt("samplePercentage", samplePercentage);
     conf.setJobName("Cooccurence");
     conf.setNumReduceTasks(reduceTasks);
@@ -208,8 +172,8 @@ public class WikiWordCooccurrence {
     //conf.set("mapred.task.timeout", "12000000");
     //conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
 
-    conf.setInputFormat(WikipediaPageInputFormat.class);
-    conf.setOutputFormat(TextOutputFormat.class);
+    //conf.setInputFormat(TextInputFormat.class);
+    //conf.setOutputFormat(TextOutputFormat.class);
 
     conf.setMapperClass(MyMapper.class);
     conf.setCombinerClass(MyReducer.class);
@@ -229,7 +193,5 @@ public class WikiWordCooccurrence {
         + " seconds");
     Counters counters = job.getCounters();
     Counter totalSentences = counters.findCounter(MyCounter.NUM_SENTENCES);
-    FileUtils.writeStringToFile(new File(counterFile),
-        Long.toString(totalSentences.getValue()));
   }
 }

@@ -1,0 +1,19 @@
+$def with (items, num_cols)
+<center>
+<h1>Categories</h1>
+<table class=imagetable>
+
+$ item_cnt = 0
+$for item in items:
+  $if item_cnt % num_cols == 0: 
+    <tr>
+  <td>
+  $:render.item(item)
+  </td>
+  $ item_cnt += 1
+  $if item_cnt % num_cols == 0: 
+    </tr>
+$if item_cnt % num_cols != 0:
+  </tr>
+</table>
+</center>

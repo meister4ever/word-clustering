@@ -43,9 +43,11 @@ public class MutualInformation {
 
   public static class MutualInformationReducer extends MapReduceBase implements
     Reducer<Text, Text, Text, DoubleWritable> {
+      private long totalCount;
 
       @Override
         public void configure(JobConf job) {
+	  totalCount = job.getLong("totalCount", 1000000);
         }
 
       @Override
@@ -64,7 +66,11 @@ public class MutualInformation {
               continue;
             }
           }
-          Double outVal = prob / cooccurence.doubleValue();
+          Double weight = (cooccurence.doubleValue() + 1) / (cooccurence.doubleValue() + 1 + 1000.0);
+          Double outVal = weight * (cooccurence.doubleValue() / totalCount) * Math.log(totalCount * prob / cooccurence.doubleValue());
+          if (outVal <= 0.0 || cooccurence.doubleValue() < 100.0 / 4.0) {
+            return;
+          }
           String outKey = key.toString().replaceAll("[0-9]", "");
           outKey = outKey.replaceAll("", " : ");
           output.collect(new Text(outKey), new DoubleWritable(outVal));
@@ -72,18 +78,21 @@ public class MutualInformation {
     }
 
   public static void main(String[] args) throws IOException {
-    if (args.length < 3) {
+    if (args.length < 4) {
       System.err.println("Usage: hadoop jar Cooccur.jar MutualInformation"
-          + " <in-files> <out-dir> <num-reducers>"); 
+          + " <in-files> <out-dir> <total-records-file> <num-reducers>"); 
       return;
     }
     String inputPath = args[0];
     String outputPath = args[1];
+    String totalRecordsStr = FileUtil.ReadFileContent(args[2]);
+    long totalRecords = Long.parseLong(totalRecordsStr); 
 
     JobConf conf = new JobConf(MutualInformation.class);
 
+    conf.setLong("totalRecords", totalRecords);
     conf.setJobName("MutualInformation");
-    conf.setNumReduceTasks(Integer.parseInt(args[2]));
+    conf.setNumReduceTasks(Integer.parseInt(args[3]));
 
     conf.setMapperClass(MutualInformationMapper.class);
     conf.setReducerClass(MutualInformationReducer.class);

@@ -1,5 +1,4 @@
 import java.lang.Comparable;
-import java.lang.Math;
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -29,7 +28,7 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
 @SuppressWarnings("deprecation")
-public class MREntityCrossSimilarity {
+public class MRWordCrossSimilarity {
 
 	private static class DotProductData {
 		public String firstValue;
@@ -67,7 +66,7 @@ public class MREntityCrossSimilarity {
 
 	public static DotProductData ComputeDotProduct(String first, String second) {
 		Set<CategoryProduct> categorySet = new TreeSet<CategoryProduct>();
-		System.out.println(first + " : " + second);
+		//System.out.println(first + " : " + second);
 		DotProductData dotProduct = new DotProductData();
 		String[] parts = first.split("\t");
 		dotProduct.firstValue = parts[0];
@@ -78,30 +77,31 @@ public class MREntityCrossSimilarity {
 		String[] secondParts = parts[1].split(",");
 		dotProduct.dotProduct = 0.0;
 
-    Double modFirst = 0.0, modSecond = 0.0;
-
 		HashMap<String, Double> categoryScores = new HashMap<String, Double>();
 		for (int i = 0; i < firstParts.length; ++i) {
 			parts = firstParts[i].split(":");
-      Double sc = Double.parseDouble(parts[1]); 
-			categoryScores.put(parts[0], sc);
-      modFirst += (sc * sc); 
+			categoryScores.put(parts[0], Double.parseDouble(parts[1]));
 		}
-    modFirst = Math.sqrt(modFirst);
+    int intersection = 0;
 		for (int i = 0; i < secondParts.length; ++i) {
 			parts = secondParts[i].split(":");
 			Double prevValue = categoryScores.get(parts[0]);
 			if (prevValue != null) {
-        Double sc = Double.parseDouble(parts[1]); 
-        modSecond += (sc * sc);
-				Double product = prevValue * sc;
+				Double product = prevValue * Double.parseDouble(parts[1]);
 				categorySet.add(new CategoryProduct(parts[0], product));
 				dotProduct.dotProduct += product;
+        ++intersection;
 			}
 		}
-    modSecond = Math.sqrt(modSecond);
-    dotProduct.dotProduct /= (modFirst * modSecond);
+    //if (intersection > 0) {
+      //dotProduct.dotProduct = dotProduct.dotProduct / intersection;
+    //}
 		dotProduct.orderedCategories = categorySet;
+    if (dotProduct.firstValue.compareTo(dotProduct.secondValue) > 0) {
+      String tmp = dotProduct.firstValue;
+      dotProduct.firstValue = dotProduct.secondValue;
+      dotProduct.secondValue = tmp;
+    }
 		return dotProduct;
 	}
 
@@ -170,7 +170,7 @@ public class MREntityCrossSimilarity {
 			Integer recordNumber = Integer.parseInt(parts[0]);
 			String newKey = String.format("%010d", recordNumber);
 			output.collect(new MyText(newKey, "0"), new Text(parts[1]));
-			for (int i = 1; i <= totalRecords; ++i) {
+			for (int i = 0; i < totalRecords; ++i) {
 				newKey = String.format("%010d", i);
 				output.collect(new MyText(newKey, "1"), new Text(parts[1]));
 			}
@@ -208,19 +208,10 @@ public class MREntityCrossSimilarity {
 				if (currentValue.compareTo(firstValue) != 0) {
 					DotProductData data = ComputeDotProduct(firstValue,
 							currentValue);
-					String categoryString = "";
-					boolean first = true;
-					for (CategoryProduct cat : data.orderedCategories) {
-						if (!first) {
-							categoryString += "," + cat;
-						} else {
-							categoryString += cat;
-							first = false;
-						}
-					}
-					output.collect(new Text(data.firstValue + ", "
-							+ data.secondValue), new Text(data.dotProduct
-							.toString() + "\t" + categoryString));
+          if (data.dotProduct > 0.0) {
+            output.collect(new Text(data.firstValue + ", "
+                  + data.secondValue), new Text(data.dotProduct.toString()));
+          }
 				}
 			}
 		}
@@ -271,19 +262,19 @@ public class MREntityCrossSimilarity {
 
 		String inputPath = args[0];
 		String outputPath = args[1];
-		Integer totalRecords = Integer.parseInt(args[2]);
+		Integer totalRecords = Integer.parseInt(FileUtil.ReadFileContent(args[2]));
 		Integer numReducers = Integer.parseInt(args[3]);
 
 		// int reduceTasks = Integer.parseInt(args[2]);
 
 		JobConf conf = new JobConf(MRWordTopicConverter.class);
 
-		conf.setJobName("MREntityCrossSimilarity");
+		conf.setJobName("MRWordCrossSimilarity");
 		conf.setNumReduceTasks(numReducers);
 		conf.setNumMapTasks(numReducers);
 		conf.setInt("totalRecords", totalRecords);
 
-		conf.set("mapred.task.timeout", "12000000");
+		// conf.set("mapred.task.timeout", "12000000");
 		// conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
 
 		// conf.setInputFormat(TextInputFormat.class);

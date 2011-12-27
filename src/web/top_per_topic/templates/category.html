@@ -1,0 +1,24 @@
+$def with (category_list)
+
+$if 'entities' in category_list:
+  <table>
+    <tr>
+      <th colspan=2><h2>$category_list['category']</h2></th>
+    <tr>
+    <tr></tr>
+    <tr>
+      <th>Rank</th>
+      <th>Name</th>
+    </tr>
+  $for entity in category_list['entities']:
+    <tr>
+      <td>$entity.rank</td>
+      <td><a href="http://www.google.com/search?q=$entity.name" target="_blank">$entity.name</a></td>
+    </tr>
+  </table>
+$if 'words' in category_list:
+  <br>
+  $for word in category_list['words']:
+    <i>$word, </i>
+<br>
+<a href="#" onClick="document.getElementById('res').style.visibility='hidden'">Close</a>

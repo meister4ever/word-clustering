@@ -1,0 +1,40 @@
+$def with (page, title=None, category_list=None)
+<html><head>
+<title>Topic Entity Listing
+</title>
+</script>
+<style type="text/css">
+  /*this is what we want the div to look like*/
+  div.centered{
+    display:block;
+
+    /*set the div in the center of the screen*/
+    position:absolute;
+    top:10%;
+    left:35%;
+    width:400px;
+    height:250px;
+  
+  /*give it some background and border*/
+  background:#eee;
+  border:1px solid #ddd;
+  }
+
+table.imagetable {
+  font-family: verdana,arial,sans-serif;
+  font-size:15px;
+  border-collapse: collapse;
+}
+table.imagetable th {
+}
+table.imagetable td {
+}
+</style>
+</head><body>
+<center><h1><a href="/">Topic Entity Listing</a></h1></center>
+$:page
+$if category_list:
+  <div class="centered" style="visibility='visible'" id="res">
+  <center>
+  $:render.category(category_list)</center></div>
+</body></html>

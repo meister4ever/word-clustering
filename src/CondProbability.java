@@ -84,7 +84,11 @@ public class CondProbability {
       public int getPartition(Text key, Text value, int numReduceTasks) {
         String compareString = key.toString();
         String compareSubString = compareString.substring(0, compareString.length() - 2);
-        return Math.abs(compareSubString.hashCode()) % numReduceTasks;
+        int sum = 0;
+        for (int i = 0; i < compareSubString.length(); ++i) {
+          sum += Character.getNumericValue(compareSubString.charAt(i));
+        }
+        return sum % numReduceTasks;
       }
 
     @Override

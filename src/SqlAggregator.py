@@ -29,7 +29,11 @@ class Dumper:
       entity, entity_vector = line.strip().split('\t')
       topicScores = entity_vector.split(',')
       for topicScore in topicScores:
-        topic, score = topicScore.split(':')
+        try:
+          topic, score = topicScore.split(':')
+        except:
+          print 'Error: %s\n' % topicScore
+          sys.exit(-1)
         topic_dict[topic] = score;
   
       sorted_topics = topic_dict.keys()
@@ -57,8 +61,10 @@ class Dumper:
       print '%d] Topic %s' % (topic_number, topic)
       print '\tTop:'
       entity_num = 1
+      res = []
       for row in self.cursor.fetchall():
         print '\t%d] %s' % (entity_num, row[0])
+        res.append(row[0])
         entity_num += 1
       print '\n'
 
@@ -70,6 +76,11 @@ class Dumper:
         print '\t%d] %s' % (entity_num, row[0])
         entity_num += 1
       print '\n'
+
+      cnt = 1 
+      for k in res:
+        print '==%s\t%s\t%d' % (topic, k, cnt)
+        cnt += 1
 
       topic_number += 1
 

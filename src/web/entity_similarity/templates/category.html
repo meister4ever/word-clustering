@@ -1,0 +1,14 @@
+$def with (category_list)
+
+<table>
+  <tr>
+    <th colspan=2><h2>$category_list['entity']</h2></th>
+  <tr>
+  <tr></tr>
+$for entity in category_list['entities']:
+  <tr>
+    <td><a href="http://www.google.com/search?q=$entity.entity2" target="_blank">$entity.entity2</a></td>
+  </tr>
+</table>
+<br>
+<a href="#" onClick="document.getElementById('res').style.visibility='hidden'">Close</a>

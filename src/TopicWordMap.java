@@ -51,4 +51,8 @@ public class TopicWordMap {
 	Set<String> getAllTopics() {
 		return topicWordsMap.keySet(); 
 	}
+
+  HashSet<Integer> getWordIdsForTopics(String topic) {
+    return topicWordsMap.get(topic);
+  }
 }

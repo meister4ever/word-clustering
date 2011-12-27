@@ -1,0 +1,12 @@
+$def with (items)
+<h1>Entities</h1>
+<div style="height:350px;width:250px;overflow:auto">
+<table>
+$for item in items:
+  <tr>
+  <td>
+  $:render.item(item)
+  </td>
+  </tr>
+</table>
+</div>

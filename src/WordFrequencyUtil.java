@@ -12,7 +12,8 @@ public class WordFrequencyUtil {
     String[] lines = textStr.split("\n");
     for (String line : lines) {
       String[] parts = line.split("\t");
-      String stemmedWord = StringUtil.stem(parts[0]);
+      //String stemmedWord = StringUtil.stem(parts[0]);
+      String stemmedWord = StringUtil.clean(parts[0]);
       Integer freq = Integer.parseInt(StringUtil.clean(parts[1]));
       Integer currentFreq = wordFreq.get(stemmedWord);
       if (currentFreq == null) {
@@ -30,7 +31,7 @@ public class WordFrequencyUtil {
 	    String[] lines = textStr.split("\n");
 	    for (String line : lines) {
 	      String[] parts = line.split("\t");
-	      String stemmedWord = StringUtil.stem(parts[0]);
+	      String stemmedWord = StringUtil.clean(parts[0]);
 	      Integer freq = Integer.parseInt(StringUtil.clean(parts[1]));
 	      Integer currentFreq = wordFreq.get(stemmedWord);
 	      if (currentFreq == null) {
@@ -44,7 +45,7 @@ public class WordFrequencyUtil {
 	  }
   
   public Integer getFrequency(String word) {
-    String stemmedWord = StringUtil.stem(word);
+    String stemmedWord = StringUtil.clean(word);
     Integer value = wordFreq.get(stemmedWord);
     if (value == null) {
       value = 0;
@@ -53,12 +54,13 @@ public class WordFrequencyUtil {
   }
   
   public boolean isPresent(String word) {
-	  String stemmedWord = StringUtil.stem(word);
+	  String stemmedWord = StringUtil.clean(word);
 	  return wordFreq.containsKey(stemmedWord);
   }
   
   public String getStoredString(String word) {
-	  String stemmedWord = StringUtil.stem(word);
+	  //String stemmedWord = StringUtil.stem(word);
+	  String stemmedWord = StringUtil.clean(word);
 	  return stemmedWordMap.get(stemmedWord);
   }
   

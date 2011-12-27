@@ -27,7 +27,7 @@ import edu.umd.cloud9.collection.wikipedia.WikipediaPage;
 import edu.umd.cloud9.collection.wikipedia.WikipediaPageInputFormat;
 
 @SuppressWarnings("deprecation")
-public class WikiWordCooccurrence {
+public class LydiaWordCooccurrence {
 
   private static final Long NUM_WORDS = (long) 1594793586;
 
@@ -36,7 +36,7 @@ public class WikiWordCooccurrence {
   };
 
   private static class MyMapper extends MapReduceBase implements
-      Mapper<LongWritable, WikipediaPage, Text, LongWritable> {
+      Mapper<LongWritable, Text, Text, LongWritable> {
     private int window = 3;
     private int samplePercentage = 10;
     private WordFrequencyUtil wfUtil;
@@ -51,28 +51,16 @@ public class WikiWordCooccurrence {
     }
 
     @Override
-    public void map(LongWritable key, WikipediaPage page,
+    public void map(LongWritable key, Text newsText,
         OutputCollector<Text, LongWritable> output, Reporter reporter)
         throws IOException {
-      if (!page.isArticle()) {
-        return;
-      }
-
-      reporter.incrCounter(MyCounter.INPUT_ARTICLES, 1);
 
       Double randomNumber = Math.random() * 100;
       if (randomNumber.intValue() > samplePercentage) {
         return;
       }
 
-      String text = null;
-      try {
-        text = page.getContent();
-      } catch (Exception e) {
-        return;
-      } 
-
-      reporter.incrCounter(MyCounter.SAMPLED_ARTICLES, 1);
+      String text = newsText.toString();
 
       String[] sents = text.split("\\.|\\?");
       reporter.incrCounter(MyCounter.NUM_SENTENCES, sents.length);
@@ -80,16 +68,17 @@ public class WikiWordCooccurrence {
         String[] terms = sent.split("\\s+");
         for (int i = 0; i < terms.length; i++) {
           String term = terms[i];
-          //String storedWordi = StringUtil.clean(term);
+          String storedWordi = StringUtil.clean(term);
           //if (storedWordi.length() == 0 || storedWordi.matches(".*[^a-zA-Z0-9 '].*")) {
           //  continue;
           //}
-          String storedWordi = wfUtil.getStoredString(terms[i]);
-          if (!wfUtil.isPresent(term)) {
+          //String storedWordi = wfUtil.getStoredString(terms[i]);
+          if (!wfUtil.isPresent(storedWordi)) {
             continue;
           }
           reporter.incrCounter(MyCounter.INPUT_WORDS, 1);
 
+          //for (int j = (i - window); j < (i + window) && j < terms.length; j++) {
           for (int j = 0; j < terms.length; j++) {
             if (j == i || j < 0)
               continue;
@@ -97,12 +86,12 @@ public class WikiWordCooccurrence {
             if (j >= terms.length)
               break;
 
-            if (!wfUtil.isPresent(terms[j])) {
+            //String storedWordj = wfUtil.getStoredString(terms[j]);
+            String storedWordj = StringUtil.clean(terms[j]);
+            if (!wfUtil.isPresent(storedWordj)) {
               continue;
             }
 
-            String storedWordj = wfUtil.getStoredString(terms[j]);
-            //String storedWordj = StringUtil.clean(terms[j]);
             //if (storedWordj.length() == 0 || storedWordj.matches(".*[^a-zA-Z0-9 '].*")) {
             //  continue;
             //}
@@ -166,7 +155,7 @@ public class WikiWordCooccurrence {
   /**
    * Creates an instance of this tool.
    */
-  public WikiWordCooccurrence() {
+  public LydiaWordCooccurrence() {
   }
 
   private static int printUsage() {
@@ -192,7 +181,7 @@ public class WikiWordCooccurrence {
     int samplePercentage = Integer.parseInt(args[5]);
     String counterFile = args[6];
 
-    JobConf conf = new JobConf(WikiWordCooccurrence.class);
+    JobConf conf = new JobConf(LydiaWordCooccurrence.class);
     System.out.println(" - input path: " + inputPath);
     System.out.println(" - output path: " + outputPath);
     System.out.println(" - window: " + window);
@@ -208,8 +197,8 @@ public class WikiWordCooccurrence {
     //conf.set("mapred.task.timeout", "12000000");
     //conf.set("mapred.child.java.opts", "-Xmx4000M -Xms2000M");
 
-    conf.setInputFormat(WikipediaPageInputFormat.class);
-    conf.setOutputFormat(TextOutputFormat.class);
+    //conf.setInputFormat(TextInputFormat.class);
+    //conf.setOutputFormat(TextOutputFormat.class);
 
     conf.setMapperClass(MyMapper.class);
     conf.setCombinerClass(MyReducer.class);
